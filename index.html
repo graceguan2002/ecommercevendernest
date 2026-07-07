@@ -551,6 +551,25 @@
         </div>
     </div>
 
+    <!-- 通用确认弹窗 -->
+    <div class="modal" id="confirmModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card modal-card-sm">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">确认操作</h3>
+                <button class="modal-close" data-confirm-cancel>×</button>
+            </div>
+            <div class="modal-body">
+                <div class="confirm-icon">!</div>
+                <div class="confirm-message" id="confirmModalMessage"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="btnConfirmCancel">取消</button>
+                <button class="btn btn-danger" id="btnConfirmOk">确认</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast 提示 -->
     <div class="toast" id="toast" style="display:none;"></div>
 

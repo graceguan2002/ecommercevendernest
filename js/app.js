@@ -189,7 +189,16 @@ const App = {
         } else {
             list.innerHTML = items.map(n => this.noticeItemHtml(n)).join('');
             list.querySelectorAll('.notice-item').forEach(el => {
-                el.addEventListener('click', () => this.openNoticeDetail(el.dataset.id));
+                el.addEventListener('click', e => {
+                    if (e.target.closest('.item-del-btn')) return;
+                    this.openNoticeDetail(el.dataset.id);
+                });
+            });
+            list.querySelectorAll('.item-del-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    this.confirmDeleteNotice(btn.dataset.id);
+                });
             });
         }
         // 首页 Hero 按钮文案：根据角色调整
@@ -245,7 +254,16 @@ const App = {
             empty.style.display = 'none';
             list.innerHTML = items.map(n => this.noticeItemHtml(n)).join('');
             list.querySelectorAll('.notice-item').forEach(el => {
-                el.addEventListener('click', () => this.openNoticeDetail(el.dataset.id));
+                el.addEventListener('click', e => {
+                    if (e.target.closest('.item-del-btn')) return;
+                    this.openNoticeDetail(el.dataset.id);
+                });
+            });
+            list.querySelectorAll('.item-del-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    this.confirmDeleteNotice(btn.dataset.id);
+                });
             });
         }
         this.applyRoleUI();
@@ -255,8 +273,10 @@ const App = {
         const pinnedTag = n.pinned ? '<span class="tag tag-pinned">置顶</span>' : '';
         const catTag = `<span class="tag ${categoryTagClass(n.category)}">${categoryLabel(n.category)}</span>`;
         const iconChar = n.pinned ? '!' : '通';
+        const delBtn = this.isAdmin ? '<button class="item-del-btn" data-id="' + n.id + '" title="删除通知">🗑</button>' : '';
         return `
         <div class="notice-item ${n.pinned ? 'pinned' : ''}" data-id="${n.id}">
+            ${delBtn}
             <div class="notice-icon">${iconChar}</div>
             <div class="notice-body">
                 <div class="notice-title">${escapeHtml(n.title)} ${pinnedTag} ${catTag}</div>
@@ -370,13 +390,41 @@ const App = {
     deleteNotice() {
         if (!this.isAdmin) return;
         if (!this.currentNoticeDetailId) return;
-        if (!confirm('确认删除该通知吗？')) return;
-        this.data.notices = this.data.notices.filter(x => x.id !== this.currentNoticeDetailId);
-        DataStore.save(this.data);
-        this.closeModal('noticeDetailModal');
-        this.refreshNotice();
-        this.refreshHome();
-        this.toast('通知已删除', 'success');
+        const id = this.currentNoticeDetailId;
+        const n = this.data.notices.find(x => x.id === id);
+        this._pendingDelete = { type: 'notice', id };
+        this.openConfirmModal({
+            title: '删除通知',
+            message: `确认删除通知「${n ? escapeHtml(n.title) : ''}」吗？删除后无法恢复。`,
+            danger: true,
+            onConfirm: () => {
+                this.data.notices = this.data.notices.filter(x => x.id !== id);
+                DataStore.save(this.data);
+                this.closeModal('noticeDetailModal');
+                this.refreshNotice();
+                this.refreshHome();
+                this.toast('通知已删除', 'success');
+            }
+        });
+    },
+
+    confirmDeleteNotice(id) {
+        if (!this.isAdmin) return;
+        const n = this.data.notices.find(x => x.id === id);
+        if (!n) return;
+        this._pendingDelete = { type: 'notice', id };
+        this.openConfirmModal({
+            title: '删除通知',
+            message: `确认删除通知「${escapeHtml(n.title)}」吗？删除后无法恢复。`,
+            danger: true,
+            onConfirm: () => {
+                this.data.notices = this.data.notices.filter(x => x.id !== id);
+                DataStore.save(this.data);
+                this.refreshNotice();
+                this.refreshHome();
+                this.toast('通知已删除', 'success');
+            }
+        });
     },
 
     // ============== 规则板块 ==============
@@ -416,7 +464,16 @@ const App = {
             empty.style.display = 'none';
             list.innerHTML = items.map(r => this.ruleItemHtml(r)).join('');
             list.querySelectorAll('.rule-item').forEach(el => {
-                el.addEventListener('click', () => this.openRuleDetail(el.dataset.id));
+                el.addEventListener('click', e => {
+                    if (e.target.closest('.item-del-btn')) return;
+                    this.openRuleDetail(el.dataset.id);
+                });
+            });
+            list.querySelectorAll('.item-del-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    this.confirmDeleteRule(btn.dataset.id);
+                });
             });
         }
         this.applyRoleUI();
@@ -506,24 +563,30 @@ const App = {
             return this.toast('内置板块不可删除', 'error');
         }
         const count = this.data.rules.filter(r => r.category === key).length;
-        if (!confirm(`确认删除板块「${info.name}」？${count > 0 ? `该板块下 ${count} 条内容将一起删除。` : ''}`)) return;
-        delete RULE_CATEGORIES[key];
-        this.data.rules = this.data.rules.filter(r => r.category !== key);
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY + '_categories');
-            const custom = raw ? JSON.parse(raw) : {};
-            delete custom[key];
-            localStorage.setItem(STORAGE_KEY + '_categories', JSON.stringify(custom));
-        } catch (e) {}
-        DataStore.save(this.data);
-        this.renderCategoryCards();
-        this.currentRuleCat = 'qualify';
-        document.querySelectorAll('.cat-card').forEach(x => x.classList.remove('active'));
-        const first = document.querySelector('.cat-card[data-cat="qualify"]');
-        if (first) first.classList.add('active');
-        this.refreshRule();
-        this.refreshHome();
-        this.toast('板块已删除', 'success');
+        this.openConfirmModal({
+            title: '删除板块',
+            message: `确认删除板块「${escapeHtml(info.name)}」？${count > 0 ? `该板块下 ${count} 条内容将一起删除。` : '该操作不可恢复。'}`,
+            danger: true,
+            onConfirm: () => {
+                delete RULE_CATEGORIES[key];
+                this.data.rules = this.data.rules.filter(r => r.category !== key);
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY + '_categories');
+                    const custom = raw ? JSON.parse(raw) : {};
+                    delete custom[key];
+                    localStorage.setItem(STORAGE_KEY + '_categories', JSON.stringify(custom));
+                } catch (e) {}
+                DataStore.save(this.data);
+                this.renderCategoryCards();
+                this.currentRuleCat = 'qualify';
+                document.querySelectorAll('.cat-card').forEach(x => x.classList.remove('active'));
+                const first = document.querySelector('.cat-card[data-cat="qualify"]');
+                if (first) first.classList.add('active');
+                this.refreshRule();
+                this.refreshHome();
+                this.toast('板块已删除', 'success');
+            }
+        });
     },
 
     loadCustomCategories() {
@@ -623,8 +686,10 @@ const App = {
 
     ruleItemHtml(r) {
         const tagHtml = r.tag ? `<span class="tag ${r.tag === '必读' ? 'tag-must' : ''}">${escapeHtml(r.tag)}</span>` : '';
+        const delBtn = this.isAdmin ? '<button class="item-del-btn" data-id="' + r.id + '" title="删除内容">🗑</button>' : '';
         return `
         <div class="rule-item" data-id="${r.id}">
+            ${delBtn}
             <div class="rule-item-icon">规</div>
             <div class="rule-item-body">
                 <div class="rule-item-title">${escapeHtml(r.title)} ${tagHtml}</div>
@@ -818,13 +883,39 @@ const App = {
     deleteRule() {
         if (!this.isAdmin) return;
         if (!this.editRuleId) return;
-        if (!confirm('确认删除该内容吗？')) return;
-        this.data.rules = this.data.rules.filter(r => r.id !== this.editRuleId);
-        DataStore.save(this.data);
-        this.closeModal('ruleDetailModal');
-        this.refreshRule();
-        this.refreshHome();
-        this.toast('内容已删除', 'success');
+        const id = this.editRuleId;
+        const r = this.data.rules.find(x => x.id === id);
+        this.openConfirmModal({
+            title: '删除内容',
+            message: `确认删除「${r ? escapeHtml(r.title) : ''}」吗？删除后无法恢复。`,
+            danger: true,
+            onConfirm: () => {
+                this.data.rules = this.data.rules.filter(x => x.id !== id);
+                DataStore.save(this.data);
+                this.closeModal('ruleDetailModal');
+                this.refreshRule();
+                this.refreshHome();
+                this.toast('内容已删除', 'success');
+            }
+        });
+    },
+
+    confirmDeleteRule(id) {
+        if (!this.isAdmin) return;
+        const r = this.data.rules.find(x => x.id === id);
+        if (!r) return;
+        this.openConfirmModal({
+            title: '删除内容',
+            message: `确认删除「${escapeHtml(r.title)}」吗？删除后无法恢复。`,
+            danger: true,
+            onConfirm: () => {
+                this.data.rules = this.data.rules.filter(x => x.id !== id);
+                DataStore.save(this.data);
+                this.refreshRule();
+                this.refreshHome();
+                this.toast('内容已删除', 'success');
+            }
+        });
     },
 
     // ============== 工具入口 ==============
@@ -963,12 +1054,19 @@ const App = {
 
     deleteTool(id) {
         if (!this.isAdmin) return;
-        if (!confirm('确认删除该工具吗？')) return;
-        this.data.tools = this.data.tools.filter(t => t.id !== id);
-        DataStore.save(this.data);
-        this.refreshTool();
-        this.refreshHome();
-        this.toast('工具已删除', 'success');
+        const t = this.data.tools.find(x => x.id === id);
+        this.openConfirmModal({
+            title: '删除工具',
+            message: `确认删除工具「${t ? escapeHtml(t.name) : ''}」吗？删除后无法恢复。`,
+            danger: true,
+            onConfirm: () => {
+                this.data.tools = this.data.tools.filter(x => x.id !== id);
+                DataStore.save(this.data);
+                this.refreshTool();
+                this.refreshHome();
+                this.toast('工具已删除', 'success');
+            }
+        });
     },
 
     // ============== 工单板块 ==============
@@ -1002,7 +1100,16 @@ const App = {
             empty.style.display = 'none';
             list.innerHTML = items.map(t => this.ticketItemHtml(t)).join('');
             list.querySelectorAll('.ticket-item').forEach(el => {
-                el.addEventListener('click', () => this.openTicketDetail(el.dataset.id));
+                el.addEventListener('click', e => {
+                    if (e.target.closest('.item-del-btn')) return;
+                    this.openTicketDetail(el.dataset.id);
+                });
+            });
+            list.querySelectorAll('.item-del-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    this.confirmDeleteTicket(btn.dataset.id);
+                });
             });
         }
         this.applyRoleUI();
@@ -1011,8 +1118,10 @@ const App = {
     ticketItemHtml(t) {
         const typeInfo = TICKET_TYPES[t.type] || { name: t.type };
         const statusInfo = TICKET_STATUS[t.status] || { name: t.status, cls: '' };
+        const delBtn = this.isAdmin ? '<button class="item-del-btn" data-id="' + t.id + '" title="删除工单">🗑</button>' : '';
         return `
         <div class="ticket-item" data-id="${t.id}">
+            ${delBtn}
             <div class="ticket-head">
                 <div class="ticket-head-left">
                     <span class="ticket-id">${escapeHtml(t.id)}</span>
@@ -1130,6 +1239,24 @@ const App = {
         document.getElementById('ticketDetailModal').style.display = 'flex';
     },
 
+    confirmDeleteTicket(id) {
+        if (!this.isAdmin) return;
+        const t = this.data.tickets.find(x => x.id === id);
+        if (!t) return;
+        this.openConfirmModal({
+            title: '删除工单',
+            message: `确认删除工单「${escapeHtml(t.provider)} - ${escapeHtml((t.desc || '').slice(0, 30))}」吗？删除后无法恢复。`,
+            danger: true,
+            onConfirm: () => {
+                this.data.tickets = this.data.tickets.filter(x => x.id !== id);
+                DataStore.save(this.data);
+                this.refreshTicket();
+                this.refreshHome();
+                this.toast('工单已删除', 'success');
+            }
+        });
+    },
+
     updateTicketStatus(newStatus) {
         if (!this.isAdmin) return;
         if (!this.currentTicketDetailId) return;
@@ -1166,6 +1293,48 @@ const App = {
         if (el) el.style.display = 'none';
     },
 
+    // 通用确认弹窗
+    openConfirmModal({ title = '确认操作', message = '', danger = false, confirmText = '确认', cancelText = '取消', onConfirm = null, onCancel = null }) {
+        const modal = document.getElementById('confirmModal');
+        if (!modal) return;
+        document.getElementById('confirmModalTitle').textContent = title;
+        document.getElementById('confirmModalMessage').textContent = message;
+        const btn = document.getElementById('btnConfirmOk');
+        btn.textContent = confirmText;
+        btn.className = 'btn ' + (danger ? 'btn-danger' : 'btn-primary');
+        document.getElementById('btnConfirmCancel').textContent = cancelText;
+        this._confirmCallback = onConfirm;
+        this._cancelCallback = onCancel;
+        modal.style.display = 'flex';
+    },
+
+    handleConfirmOk() {
+        const cb = this._confirmCallback;
+        this.closeModal('confirmModal');
+        this._confirmCallback = null;
+        this._cancelCallback = null;
+        if (typeof cb === 'function') cb();
+    },
+
+    handleConfirmCancel() {
+        const cb = this._cancelCallback;
+        this.closeModal('confirmModal');
+        this._confirmCallback = null;
+        this._cancelCallback = null;
+        if (typeof cb === 'function') cb();
+    },
+
+    bindConfirmModal() {
+        const btnOk = document.getElementById('btnConfirmOk');
+        const btnCancel = document.getElementById('btnConfirmCancel');
+        if (btnOk) btnOk.addEventListener('click', () => this.handleConfirmOk());
+        if (btnCancel) btnCancel.addEventListener('click', () => this.handleConfirmCancel());
+        // 关闭 × 按钮
+        document.querySelectorAll('[data-confirm-cancel]').forEach(el => {
+            el.addEventListener('click', () => this.handleConfirmCancel());
+        });
+    },
+
     toast(msg, type = '') {
         const t = document.getElementById('toast');
         t.textContent = msg;
@@ -1182,4 +1351,5 @@ const App = {
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
     App.bindNoticeDetail();
+    App.bindConfirmModal();
 });
