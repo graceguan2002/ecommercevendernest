@@ -77,10 +77,10 @@
         </div>
         <nav class="topbar-nav">
             <a class="nav-item active" data-tab="home">首页</a>
-            <a class="nav-item" data-tab="notice">通知</a>
-            <a class="nav-item" data-tab="rule">规则</a>
-            <a class="nav-item" data-tab="tool">工具入口</a>
-            <a class="nav-item" data-tab="ticket">服务商工单<span class="nav-badge" id="ticketBadge" style="display:none;">0</span></a>
+            <a class="nav-item" data-tab="notice">最新通知<span class="nav-sub">通知·规则</span></a>
+            <a class="nav-item" data-tab="baibaoxiang">百宝箱<span class="nav-sub">行业知识库</span></a>
+            <a class="nav-item" data-tab="tool">工具中心<span class="nav-sub">产品工具跳转</span></a>
+            <a class="nav-item" data-tab="ticket">工单中心<span class="nav-badge" id="ticketBadge" style="display:none;">0</span></a>
             <a class="nav-item admin-only" data-tab="dashboard">数据看板</a>
         </nav>
         <div class="topbar-right">
@@ -97,78 +97,105 @@
 
         <!-- 首页 -->
         <section class="page page-home active" data-page="home">
-            <div class="hero">
-                <div class="hero-text">
-                    <h2>欢迎使用服务商一体化工作台</h2>
-                    <p>整合通知、规则、工具与工单，赋能电商服务商高效运营</p>
-                    <div class="hero-actions">
-                        <button class="btn btn-primary" data-go="notice">查看最新通知</button>
-                        <button class="btn btn-ghost" data-go="ticket">提交工单</button>
+            <!-- Banner 轮播（占位） -->
+            <div class="home-banner" id="homeBanner">
+                <div class="home-banner-slide active" data-bg="blue">
+                    <div class="home-banner-text">
+                        <h2>服务商一体化工作台</h2>
+                        <p>通知 · 规则 · 工具 · 工单，一站式管理</p>
+                    </div>
+                    <div class="home-banner-shape s1"></div>
+                    <div class="home-banner-shape s2"></div>
+                </div>
+                <div class="home-banner-dots" id="homeBannerDots"></div>
+            </div>
+
+            <!-- 二级红字导航 -->
+            <div class="subnav">
+                <a class="subnav-item active" data-go="notice">最新通知</a>
+                <a class="subnav-item" data-go="baibaoxiang">百宝箱</a>
+                <a class="subnav-item" data-go="tool">工具中心</a>
+                <a class="subnav-item" data-go="ticket">工单中心</a>
+            </div>
+
+            <!-- 第一板块：最新通知 + 激励活动 + 常用工具 -->
+            <div class="home-grid-3">
+                <div class="home-block">
+                    <div class="home-block-head">
+                        <h3>最新通知</h3>
+                        <a class="link-more" data-go="notice">全部 →</a>
+                    </div>
+                    <div class="home-block-body" id="homeNoticeList"></div>
+                </div>
+
+                <div class="home-block">
+                    <div class="home-block-head">
+                        <h3>激励活动</h3>
+                        <a class="link-more" data-go="notice">全部 →</a>
+                    </div>
+                    <div class="home-block-body" id="homeActivityList">
+                        <div class="home-activity-item" data-go="notice">
+                            <div class="home-activity-title">季度优秀服务商评选</div>
+                            <div class="home-activity-time">截止 2026-07-31</div>
+                        </div>
+                        <div class="home-activity-item" data-go="notice">
+                            <div class="home-activity-title">新商成长陪跑激励计划</div>
+                            <div class="home-activity-time">进行中</div>
+                        </div>
+                        <div class="home-activity-item" data-go="notice">
+                            <div class="home-activity-title">热招品牌权益汇总</div>
+                            <div class="home-activity-time">长期有效</div>
+                        </div>
                     </div>
                 </div>
-                <div class="hero-stats hero-stats-horizontal">
-                    <div class="stat-card">
-                        <div class="stat-num" id="statNotice">0</div>
-                        <div class="stat-label">已发布通知</div>
+
+                <div class="home-block">
+                    <div class="home-block-head">
+                        <h3>常用工具</h3>
+                        <span class="home-block-tip">最新消息和常用入口</span>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-num" id="statRule">0</div>
-                        <div class="stat-label">规则条目</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-num" id="statTool">0</div>
-                        <div class="stat-label">工具入口</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-num" id="statTicket">0</div>
-                        <div class="stat-label">待处理工单</div>
+                    <div class="home-tools-grid">
+                        <a class="home-tool-item" href="https://miaowen.qq.com/" target="_blank" rel="noopener">
+                            <div class="home-tool-icon home-tool-icon-blue">妙</div>
+                            <div class="home-tool-name">妙问</div>
+                        </a>
+                        <a class="home-tool-item" href="https://csig.lexiangla.com/spaces/5365255fd79044be9d61c3ba6b898c69" target="_blank" rel="noopener">
+                            <div class="home-tool-icon home-tool-icon-green">库</div>
+                            <div class="home-tool-name">电商鹅宝知识库</div>
+                        </a>
+                        <a class="home-tool-item" data-go="baibaoxiang">
+                            <div class="home-tool-icon home-tool-icon-purple">箱</div>
+                            <div class="home-tool-name">百宝箱</div>
+                        </a>
+                        <a class="home-tool-item" data-go="tool">
+                            <div class="home-tool-icon home-tool-icon-orange">具</div>
+                            <div class="home-tool-name">工具中心</div>
+                        </a>
                     </div>
                 </div>
             </div>
 
+            <!-- 第二板块：必读信息（按板块分类的规则） -->
             <div class="section">
                 <div class="section-header">
-                    <h3>功能板块</h3>
+                    <h3>必读信息</h3>
+                    <span class="section-sub">管理模块中的必读规则，按板块集中展示</span>
                 </div>
-                <div class="card-grid card-grid-4">
-                    <div class="feature-card" data-go="notice">
-                        <div class="feature-icon icon-notice"></div>
-                        <h4>通知板块</h4>
-                        <p>重要通知同步，管理员可上传下发</p>
-                    </div>
-                    <div class="feature-card" data-go="rule">
-                        <div class="feature-icon icon-rule"></div>
-                        <h4>规则板块</h4>
-                        <p>企业资质、报备流程、SAB、合伙人等日常内容</p>
-                    </div>
-                    <div class="feature-card" data-go="tool">
-                        <div class="feature-icon icon-tool"></div>
-                        <h4>工具入口</h4>
-                        <p>二维码、百宝箱、最小作战单元、AI 工具一键跳转</p>
-                    </div>
-                    <div class="feature-card" data-go="ticket">
-                        <div class="feature-icon icon-ticket"></div>
-                        <h4>服务商工单</h4>
-                        <p>加白、AI 辅助等申请，查阅与处理</p>
-                    </div>
+                <div class="home-rules-tabs" id="homeRulesTabs">
+                    <span class="home-rules-tab active" data-cat="qualify">引入规则</span>
+                    <span class="home-rules-tab" data-cat="manage">管理类内容</span>
+                    <span class="home-rules-tab" data-cat="risk">风控信息</span>
                 </div>
-            </div>
-
-            <div class="section">
-                <div class="section-header">
-                    <h3>最新通知</h3>
-                    <a class="link-more" data-go="notice">查看全部 →</a>
-                </div>
-                <div class="notice-list" id="homeNoticeList"></div>
+                <div class="home-rules-list" id="homeRulesList"></div>
             </div>
         </section>
 
-        <!-- 通知 -->
+        <!-- 最新通知（合并原通知 + 规则） -->
         <section class="page" data-page="notice">
             <div class="page-header">
                 <div>
-                    <h2>通知板块</h2>
-                    <p class="page-desc">重要通知同步，所有服务商必看</p>
+                    <h2>最新通知</h2>
+                    <p class="page-desc">行业活动通知、管理规则更新等内容</p>
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-primary admin-only" id="btnAddNotice">+ 发布通知</button>
@@ -188,6 +215,80 @@
             <div class="empty-state" id="noticeEmpty" style="display:none;">
                 <div class="empty-icon"></div>
                 <p>暂无通知</p>
+            </div>
+
+            <!-- 按板块分块的历史信息（复用原规则数据） -->
+            <div class="notice-rule-divider">
+                <span>历史信息 · 按板块查看</span>
+            </div>
+
+            <div class="rule-categories" id="noticeRuleCategories">
+                <div class="cat-card active" data-cat="qualify">
+                    <div class="cat-num">01</div>
+                    <h4>引入规则</h4>
+                    <p>企业资质要求、报备流程</p>
+                </div>
+                <div class="cat-card" data-cat="manage">
+                    <div class="cat-num">02</div>
+                    <h4>管理类内容</h4>
+                    <p>SAB、合伙人、外循环管理</p>
+                </div>
+                <div class="cat-card" data-cat="risk">
+                    <div class="cat-num">03</div>
+                    <h4>风控信息</h4>
+                    <p>违规 R 值、Y 值说明</p>
+                </div>
+                <div class="cat-card cat-card-add admin-only" id="btnAddCategory">
+                    <div class="cat-num">+</div>
+                    <h4>新增板块</h4>
+                    <p>点击添加新规则分类</p>
+                </div>
+            </div>
+
+            <div class="rule-panel">
+                <div class="rule-panel-header">
+                    <h3 id="noticeRulePanelTitle">引入规则</h3>
+                    <div class="rule-panel-actions">
+                        <button class="btn btn-primary admin-only" id="btnAddRule">+ 新增内容</button>
+                    </div>
+                </div>
+                <div class="rule-list" id="noticeRuleList"></div>
+                <div class="empty-state" id="noticeRuleEmpty" style="display:none;">
+                    <div class="empty-icon"></div>
+                    <p>该分类下暂无内容</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 百宝箱 -->
+        <section class="page" data-page="baibaoxiang">
+            <div class="page-header">
+                <div>
+                    <h2>百宝箱</h2>
+                    <p class="page-desc">按行业分区的常用文档与知识库入口</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-primary admin-only" id="btnAddBaibaoxiang">+ 新增链接</button>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-tabs" id="bbxFilterTabs">
+                    <span class="filter-tab active" data-bbxfilter="apparel">服饰运动</span>
+                    <span class="filter-tab" data-bbxfilter="beauty">美妆个护</span>
+                    <span class="filter-tab" data-bbxfilter="food">食品饮料</span>
+                    <span class="filter-tab" data-bbxfilter="digital">消电日百</span>
+                    <span class="filter-tab" data-bbxfilter="book">图书</span>
+                    <span class="filter-tab" data-bbxfilter="home">家居</span>
+                    <span class="filter-tab" data-bbxfilter="car">车后</span>
+                    <span class="filter-tab" data-bbxfilter="other">其他</span>
+                </div>
+            </div>
+
+            <div class="bbx-grid" id="bbxGrid"></div>
+            <div class="empty-state" id="bbxEmpty" style="display:none;">
+                <div class="empty-icon"></div>
+                <p>该行业下暂无链接</p>
             </div>
         </section>
 
@@ -238,12 +339,12 @@
             </div>
         </section>
 
-        <!-- 工具入口 -->
+        <!-- 工具中心 -->
         <section class="page" data-page="tool">
             <div class="page-header">
                 <div>
-                    <h2>工具入口</h2>
-                    <p class="page-desc">日常工具一键跳转</p>
+                    <h2>工具中心</h2>
+                    <p class="page-desc">产品工具链接集中跳转</p>
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-primary admin-only" id="btnAddTool">+ 添加工具</button>
@@ -270,7 +371,7 @@
         <section class="page" data-page="ticket">
             <div class="page-header">
                 <div>
-                    <h2>服务商工单</h2>
+                    <h2>工单中心</h2>
                     <p class="page-desc" id="ticketPageDesc">服务商需求申请与处理</p>
                 </div>
                 <div class="page-actions">
@@ -429,6 +530,48 @@
             <div class="modal-footer">
                 <button class="btn btn-ghost" data-close>取消</button>
                 <button class="btn btn-primary" id="btnSaveTool">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通用弹窗：百宝箱 -->
+    <div class="modal" id="bbxModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="bbxModalTitle">新增链接</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>链接名称<span class="req">*</span></label>
+                    <input type="text" id="bbxName" placeholder="如：服饰运动问题百宝箱">
+                </div>
+                <div class="form-item">
+                    <label>所属行业<span class="req">*</span></label>
+                    <select id="bbxCategory">
+                        <option value="apparel">服饰运动</option>
+                        <option value="beauty">美妆个护</option>
+                        <option value="food">食品饮料</option>
+                        <option value="digital">消电日百</option>
+                        <option value="book">图书</option>
+                        <option value="home">家居</option>
+                        <option value="car">车后</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>跳转链接<span class="req">*</span></label>
+                    <input type="text" id="bbxUrl" placeholder="https://...">
+                </div>
+                <div class="form-item">
+                    <label>说明</label>
+                    <textarea id="bbxDesc" rows="3" placeholder="链接内容描述..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close>取消</button>
+                <button class="btn btn-primary" id="btnSaveBbx">保存</button>
             </div>
         </div>
     </div>

@@ -206,6 +206,12 @@ ul, ol { list-style: none; }
     border-radius: var(--radius);
     cursor: pointer; transition: all 0.2s;
 }
+.nav-sub {
+    margin-left: 4px;
+    font-size: 11px;
+    color: #ef4444;
+    font-weight: 400;
+}
 .nav-item:hover { color: var(--primary); background: var(--primary-bg); }
 .nav-item.active { color: var(--primary); background: var(--primary-bg); }
 .nav-badge {
@@ -240,6 +246,276 @@ ul, ol { list-style: none; }
 /* ============== 主体内容 ============== */
 .main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; }
 .page { display: none; }
+
+/* ============== 二级红字导航 ============== */
+.subnav {
+    display: flex;
+    gap: 4px;
+    padding: 14px 4px 0;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+}
+.subnav-item {
+    padding: 6px 14px;
+    font-size: 14px;
+    color: #ef4444;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+.subnav-item:hover { background: rgba(239, 68, 68, 0.08); }
+.subnav-item.active {
+    color: #fff;
+    background: #ef4444;
+}
+
+/* ============== 首页 Banner 轮播 ============== */
+.home-banner {
+    position: relative;
+    height: 180px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 18px;
+    background: #1e293b;
+}
+.home-banner-slide {
+    position: absolute;
+    inset: 0;
+    padding: 32px 36px;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.home-banner-slide.active { opacity: 1; z-index: 1; }
+.home-banner-slide[data-bg="blue"]   { background: linear-gradient(135deg, #1e40af, #3b82f6); }
+.home-banner-slide[data-bg="green"]  { background: linear-gradient(135deg, #065f46, #10b981); }
+.home-banner-slide[data-bg="purple"] { background: linear-gradient(135deg, #6b21a8, #a855f7); }
+.home-banner-text h2 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+.home-banner-text p  { font-size: 14px; opacity: 0.85; }
+.home-banner-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    pointer-events: none;
+}
+.home-banner-shape.s1 { right: 80px; top: -40px; width: 180px; height: 180px; }
+.home-banner-shape.s2 { right: -30px; bottom: -60px; width: 220px; height: 220px; background: rgba(255, 255, 255, 0.08); }
+.home-banner-dots {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 2;
+}
+.home-banner-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.home-banner-dot.active { background: #fff; width: 22px; border-radius: 4px; }
+
+/* ============== 首页三列网格 ============== */
+.home-grid-3 {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+.home-block {
+    background: #fff;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 10px;
+    overflow: hidden;
+}
+.home-block-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+    background: #f8fafc;
+}
+.home-block-head h3 { font-size: 15px; color: var(--text-1, #1e293b); font-weight: 600; }
+.home-block-tip { font-size: 12px; color: #ef4444; }
+.home-block-body { padding: 8px 4px; min-height: 180px; }
+
+/* 最新通知行 */
+.home-notice-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.15s;
+    margin: 0 4px;
+}
+.home-notice-row:hover { background: var(--bg-soft, #f1f5f9); }
+.home-notice-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #f1f5f9;
+    color: var(--text-3, #64748b);
+    flex-shrink: 0;
+}
+.home-notice-tag.tag-pinned { background: #fef3c7; color: #b45309; }
+.home-notice-title {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text-1, #1e293b);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.home-notice-time {
+    font-size: 12px;
+    color: var(--text-4, #94a3b8);
+    flex-shrink: 0;
+}
+
+/* 激励活动 */
+.home-activity-item {
+    padding: 12px 18px;
+    border-bottom: 1px dashed var(--border, #e2e8f0);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.home-activity-item:last-child { border-bottom: none; }
+.home-activity-item:hover { background: var(--bg-soft, #f1f5f9); }
+.home-activity-title { font-size: 14px; color: var(--text-1, #1e293b); font-weight: 500; margin-bottom: 4px; }
+.home-activity-time { font-size: 12px; color: #ef4444; }
+
+/* 常用工具 */
+.home-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 14px;
+}
+.home-tool-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border, #e2e8f0);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+    gap: 8px;
+}
+.home-tool-item:hover { border-color: var(--primary, #3b82f6); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1); }
+.home-tool-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 15px;
+}
+.home-tool-icon-blue   { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.home-tool-icon-green  { background: linear-gradient(135deg, #10b981, #059669); }
+.home-tool-icon-purple { background: linear-gradient(135deg, #a855f7, #7c3aed); }
+.home-tool-icon-orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.home-tool-name { font-size: 13px; color: var(--text-1, #1e293b); text-align: center; }
+
+/* ============== 首页必读信息 Tabs ============== */
+.home-rules-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+}
+.home-rules-tab {
+    padding: 10px 18px;
+    font-size: 14px;
+    color: var(--text-2, #475569);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+.home-rules-tab:hover { color: var(--primary, #3b82f6); }
+.home-rules-tab.active {
+    color: var(--primary, #3b82f6);
+    border-bottom-color: var(--primary, #3b82f6);
+}
+.home-rules-list {
+    background: #fff;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* ============== 通知页内嵌规则分隔 ============== */
+.notice-rule-divider {
+    display: flex;
+    align-items: center;
+    margin: 32px 0 18px;
+    color: var(--text-3, #64748b);
+    font-size: 13px;
+    font-weight: 500;
+}
+.notice-rule-divider::before,
+.notice-rule-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border, #e2e8f0);
+}
+.notice-rule-divider span { padding: 0 14px; }
+
+/* ============== 百宝箱卡片 ============== */
+.bbx-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+.bbx-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: #fff;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+}
+.bbx-card:hover {
+    border-color: var(--primary, #3b82f6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.12);
+}
+.bbx-card-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+.bbx-card-body { flex: 1; min-width: 0; }
+.bbx-card-title { font-size: 15px; font-weight: 600; color: var(--text-1, #1e293b); margin-bottom: 4px; }
+.bbx-card-desc { font-size: 12px; color: var(--text-3, #64748b); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bbx-card-arrow { font-size: 18px; color: var(--text-4, #94a3b8); flex-shrink: 0; }
+.bbx-card .item-del-btn { position: absolute; top: 8px; right: 8px; }
+.section-sub { font-size: 12px; color: var(--text-3, #64748b); font-weight: normal; }
 .page.active { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 

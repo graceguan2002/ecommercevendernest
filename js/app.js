@@ -5,6 +5,8 @@ const App = {
     isAdmin: false,       // 仅当 role==='tencent' 且登录成功时为 true
     currentPage: 'home',
     currentRuleCat: 'qualify',
+    currentHomeRuleCat: 'qualify',
+    currentBbxFilter: 'apparel',
     currentNoticeFilter: 'all',
     currentToolFilter: 'all',
     currentTicketFilter: 'all',
@@ -15,6 +17,16 @@ const App = {
     editTicketId: null,
     currentTicketDetailId: null,
     currentNoticeDetailId: null,
+    editBbxId: null,
+
+    // 工具方法
+    escapeHtml(s) { return escapeHtml(s); },
+    escapeAttr(s) { return escapeAttr(s); },
+    formatTime() {
+        const d = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    },
 
     // 初始化
     init() {
@@ -25,7 +37,8 @@ const App = {
         this.bindNav();
         this.bindGlobal();
         this.bindNoticePage();
-        this.bindRulePage();
+        this.bindHomeRulesTabs();
+        this.bindBaibaoxiangPage();
         this.bindToolPage();
         this.bindTicketPage();
         this.bindTagChips();
@@ -157,17 +170,13 @@ const App = {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (page === 'home') this.refreshHome();
         if (page === 'notice') this.refreshNotice();
-        if (page === 'rule') this.refreshRule();
+        if (page === 'baibaoxiang') this.refreshBaibaoxiang();
         if (page === 'tool') this.refreshTool();
         if (page === 'ticket') this.refreshTicket();
         if (page === 'dashboard') this.refreshDashboard();
     },
 
     refreshHome() {
-        document.getElementById('statNotice').textContent = this.data.notices.length;
-        document.getElementById('statRule').textContent = this.data.rules.length;
-        document.getElementById('statTool').textContent = this.data.tools.length;
-        document.getElementById('statTicket').textContent = this.data.tickets.filter(t => t.status !== 'done').length;
         // 工单红点（管理员才显示）
         const pending = this.data.tickets.filter(t => t.status === 'pending').length;
         const badge = document.getElementById('ticketBadge');
@@ -177,7 +186,7 @@ const App = {
         } else {
             badge.style.display = 'none';
         }
-        // 最新通知
+        // 最新通知列表（只显示标题，点击跳转详情）
         const list = document.getElementById('homeNoticeList');
         const items = [...this.data.notices].sort((a, b) => {
             if (a.pinned && !b.pinned) return -1;
@@ -187,26 +196,75 @@ const App = {
         if (items.length === 0) {
             list.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>暂无通知</p></div>';
         } else {
-            list.innerHTML = items.map(n => this.noticeItemHtml(n)).join('');
-            list.querySelectorAll('.notice-item').forEach(el => {
-                el.addEventListener('click', e => {
-                    if (e.target.closest('.item-del-btn')) return;
-                    this.openNoticeDetail(el.dataset.id);
-                });
-            });
-            list.querySelectorAll('.item-del-btn').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    e.stopPropagation();
-                    this.confirmDeleteNotice(btn.dataset.id);
-                });
+            list.innerHTML = items.map(n => `
+                <div class="home-notice-row" data-id="${n.id}">
+                    <span class="home-notice-tag ${n.pinned ? 'tag-pinned' : ''}">${n.pinned ? '置顶' : '通知'}</span>
+                    <span class="home-notice-title">${this.escapeHtml(n.title)}</span>
+                    <span class="home-notice-time">${(n.createdAt || '').slice(5)}</span>
+                </div>
+            `).join('');
+            list.querySelectorAll('.home-notice-row').forEach(el => {
+                el.addEventListener('click', () => this.openNoticeDetail(el.dataset.id));
             });
         }
-        // 首页 Hero 按钮文案：根据角色调整
-        const heroActions = document.querySelectorAll('.hero-actions .btn');
-        if (heroActions.length >= 2) {
-            heroActions[1].textContent = this.isAdmin ? '处理工单' : '提交工单';
-        }
+        // 第二板块：必读信息（按板块分类）
+        this.renderHomeRules();
+        // Banner 自动轮播
+        this.startBannerRotate();
         this.applyRoleUI();
+    },
+
+    renderHomeRules() {
+        const cat = this.currentHomeRuleCat || 'qualify';
+        const list = document.getElementById('homeRulesList');
+        const tabs = document.querySelectorAll('#homeRulesTabs .home-rules-tab');
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
+        // 标记"必读"：tag === '必读' 或 category === 'qualify'/'risk'（默认全部展示）
+        const items = (this.data.rules || []).filter(r => r.category === cat);
+        if (items.length === 0) {
+            list.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>该分类下暂无内容</p></div>';
+            return;
+        }
+        list.innerHTML = items.map(r => this.ruleItemHtml(r)).join('');
+        list.querySelectorAll('.rule-item').forEach(el => {
+            el.addEventListener('click', e => {
+                if (e.target.closest('.item-del-btn')) return;
+                this.openRuleDetail(el.dataset.id);
+            });
+        });
+        list.querySelectorAll('.item-del-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.stopPropagation();
+                this.confirmDeleteRule(btn.dataset.id);
+            });
+        });
+    },
+
+    // Banner 自动轮播（带 3 个简单占位图）
+    startBannerRotate() {
+        const slides = document.querySelectorAll('#homeBanner .home-banner-slide');
+        const dots = document.getElementById('homeBannerDots');
+        if (slides.length <= 1) return;
+        if (dots && !dots.children.length) {
+            slides.forEach((_, i) => {
+                const d = document.createElement('span');
+                d.className = 'home-banner-dot' + (i === 0 ? ' active' : '');
+                d.addEventListener('click', () => this.showBannerSlide(i));
+                dots.appendChild(d);
+            });
+        }
+        clearInterval(this._bannerTimer);
+        let idx = 0;
+        this._bannerTimer = setInterval(() => {
+            idx = (idx + 1) % slides.length;
+            this.showBannerSlide(idx);
+        }, 5000);
+    },
+    showBannerSlide(idx) {
+        const slides = document.querySelectorAll('#homeBanner .home-banner-slide');
+        const dots = document.querySelectorAll('#homeBanner .home-banner-dot');
+        slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
     },
 
     // ============== 通知板块 ==============
@@ -266,6 +324,8 @@ const App = {
                 });
             });
         }
+        // 同步刷新内嵌的规则板块
+        this.refreshNoticeRuleSection();
         this.applyRoleUI();
     },
 
@@ -428,35 +488,44 @@ const App = {
     },
 
     // ============== 规则板块 ==============
-    bindRulePage() {
-        // 静态板块卡片点击
-        document.querySelectorAll('.cat-card[data-cat]').forEach(c => {
-            c.addEventListener('click', () => {
-                document.querySelectorAll('.cat-card').forEach(x => x.classList.remove('active'));
-                c.classList.add('active');
-                this.currentRuleCat = c.dataset.cat;
-                this.refreshRule();
+    // ============== 首页「必读信息」Tabs ==============
+    bindHomeRulesTabs() {
+        document.querySelectorAll('#homeRulesTabs .home-rules-tab').forEach(t => {
+            t.addEventListener('click', () => {
+                this.currentHomeRuleCat = t.dataset.cat;
+                this.renderHomeRules();
             });
         });
-        // 新增板块按钮
-        document.getElementById('btnAddCategory').addEventListener('click', () => this.openCategoryModal());
-        document.getElementById('btnSaveCategory').addEventListener('click', () => this.saveCategory());
-        document.getElementById('btnAddRule').addEventListener('click', () => this.openRuleModal());
-        document.getElementById('btnSaveRule').addEventListener('click', () => this.saveRule());
-        document.getElementById('btnEditRule').addEventListener('click', () => {
+        // 通知页内嵌的规则板块
+        document.querySelectorAll('#noticeRuleCategories .cat-card[data-cat]').forEach(c => {
+            c.addEventListener('click', () => {
+                document.querySelectorAll('#noticeRuleCategories .cat-card').forEach(x => x.classList.remove('active'));
+                c.classList.add('active');
+                this.currentRuleCat = c.dataset.cat;
+                this.refreshNoticeRuleSection();
+            });
+        });
+        // 新增板块/新增内容按钮（通知页内）
+        const btnAddCategory = document.getElementById('btnAddCategory');
+        if (btnAddCategory) btnAddCategory.addEventListener('click', () => this.openCategoryModal());
+        const btnAddRule = document.getElementById('btnAddRule');
+        if (btnAddRule) btnAddRule.addEventListener('click', () => this.openRuleModal());
+        const btnEditRule = document.getElementById('btnEditRule');
+        if (btnEditRule) btnEditRule.addEventListener('click', () => {
             if (this.editRuleId) this.openRuleModal(this.editRuleId);
         });
-        document.getElementById('btnDeleteRule').addEventListener('click', () => this.deleteRule());
+        const btnDeleteRule = document.getElementById('btnDeleteRule');
+        if (btnDeleteRule) btnDeleteRule.addEventListener('click', () => this.deleteRule());
     },
 
-    refreshRule() {
+    refreshNoticeRuleSection() {
         const cat = this.currentRuleCat;
         const catInfo = RULE_CATEGORIES[cat] || { name: cat };
-        document.getElementById('rulePanelTitle').textContent = catInfo.name;
+        document.getElementById('noticeRulePanelTitle').textContent = catInfo.name;
         const items = this.data.rules.filter(r => r.category === cat)
             .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
-        const list = document.getElementById('ruleList');
-        const empty = document.getElementById('ruleEmpty');
+        const list = document.getElementById('noticeRuleList');
+        const empty = document.getElementById('noticeRuleEmpty');
         if (items.length === 0) {
             list.innerHTML = '';
             empty.style.display = 'block';
@@ -479,6 +548,111 @@ const App = {
         this.applyRoleUI();
     },
 
+    // ============== 百宝箱 ==============
+    bindBaibaoxiangPage() {
+        document.querySelectorAll('#bbxFilterTabs .filter-tab').forEach(t => {
+            t.addEventListener('click', () => {
+                document.querySelectorAll('#bbxFilterTabs .filter-tab').forEach(x => x.classList.remove('active'));
+                t.classList.add('active');
+                this.currentBbxFilter = t.dataset.bbxfilter;
+                this.renderBaibaoxiang();
+            });
+        });
+        const btnAdd = document.getElementById('btnAddBaibaoxiang');
+        if (btnAdd) btnAdd.addEventListener('click', () => this.openBbxModal());
+        const btnSave = document.getElementById('btnSaveBbx');
+        if (btnSave) btnSave.addEventListener('click', () => this.saveBbx());
+    },
+
+    refreshBaibaoxiang() {
+        this.renderBaibaoxiang();
+    },
+
+    renderBaibaoxiang() {
+        const cat = this.currentBbxFilter || 'apparel';
+        const list = document.getElementById('bbxGrid');
+        const empty = document.getElementById('bbxEmpty');
+        const items = (this.data.baibaoxiang || []).filter(b => b.category === cat);
+        if (items.length === 0) {
+            list.innerHTML = '';
+            empty.style.display = 'block';
+        } else {
+            empty.style.display = 'none';
+            list.innerHTML = items.map(b => `
+                <a class="bbx-card" href="${this.escapeAttr(b.url)}" target="_blank" rel="noopener" data-id="${b.id}">
+                    ${this.isAdmin ? '<button class="item-del-btn bbx-del" data-id="' + b.id + '" title="删除链接">🗑</button>' : ''}
+                    <div class="bbx-card-icon">箱</div>
+                    <div class="bbx-card-body">
+                        <div class="bbx-card-title">${this.escapeHtml(b.name)}</div>
+                        <div class="bbx-card-desc">${this.escapeHtml(b.desc || '')}</div>
+                    </div>
+                    <div class="bbx-card-arrow">→</div>
+                </a>
+            `).join('');
+            // 阻止删除按钮触发跳转
+            list.querySelectorAll('.bbx-del').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.confirmDeleteBbx(btn.dataset.id);
+                });
+            });
+        }
+        this.applyRoleUI();
+    },
+
+    openBbxModal(id) {
+        this.editBbxId = id || null;
+        document.getElementById('bbxModalTitle').textContent = id ? '编辑链接' : '新增链接';
+        const item = id ? this.data.baibaoxiang.find(b => b.id === id) : null;
+        document.getElementById('bbxName').value = item ? item.name : '';
+        document.getElementById('bbxCategory').value = item ? item.category : (this.currentBbxFilter || 'apparel');
+        document.getElementById('bbxUrl').value = item ? item.url : '';
+        document.getElementById('bbxDesc').value = item ? item.desc : '';
+        document.getElementById('bbxModal').style.display = 'flex';
+    },
+
+    saveBbx() {
+        const name = document.getElementById('bbxName').value.trim();
+        const category = document.getElementById('bbxCategory').value;
+        const url = document.getElementById('bbxUrl').value.trim();
+        const desc = document.getElementById('bbxDesc').value.trim();
+        if (!name) return this.toast('请输入链接名称', 'error');
+        if (!url) return this.toast('请输入跳转链接', 'error');
+        if (!this.data.baibaoxiang) this.data.baibaoxiang = [];
+        if (this.editBbxId) {
+            const b = this.data.baibaoxiang.find(x => x.id === this.editBbxId);
+            if (b) Object.assign(b, { name, category, url, desc });
+        } else {
+            this.data.baibaoxiang.push({
+                id: 'bbx_' + Date.now().toString(36),
+                name, category, url, desc,
+                author: '管理员',
+                createdAt: this.formatTime()
+            });
+        }
+        DataStore.save(this.data);
+        document.getElementById('bbxModal').style.display = 'none';
+        this.toast(this.editBbxId ? '已更新' : '已新增', 'success');
+        this.currentBbxFilter = category;
+        this.renderBaibaoxiang();
+    },
+
+    confirmDeleteBbx(id) {
+        this.openConfirmModal({
+            title: '删除链接',
+            message: '确定要删除这个链接吗？此操作不可恢复。',
+            danger: true,
+            onConfirm: () => {
+                this.data.baibaoxiang = (this.data.baibaoxiang || []).filter(b => b.id !== id);
+                DataStore.save(this.data);
+                this.renderBaibaoxiang();
+                this.toast('已删除', 'success');
+            }
+        });
+    },
+
+    // ============== 规则（保留原方法，rule 列表渲染在通知页内嵌使用） ==============
     // 动态渲染板块卡片（管理员态下展示自定义板块）
     renderCategoryCards() {
         const wrap = document.querySelector('.rule-categories');
