@@ -1,0 +1,19 @@
+- generic [ref=f1e3]:
+  - generic [ref=f1e4]:
+    - generic [ref=f1e5]: S
+    - heading "欢迎使用服务商工作台" [level=1] [ref=f1e6]
+    - paragraph [ref=f1e7]: 请选择您的身份以进入对应工作区
+  - generic [ref=f1e8]:
+    - generic [ref=f1e9] [cursor=pointer]:
+      - generic [ref=f1e10]: 服
+      - generic [ref=f1e11]:
+        - heading "我是服务商" [level=3] [ref=f1e12]
+        - paragraph [ref=f1e13]: 查看通知、规则与工具，提交需求工单
+        - generic [ref=f1e14]: 进入 →
+    - generic [ref=f1e15] [cursor=pointer]:
+      - generic [ref=f1e16]: 腾
+      - generic [ref=f1e17]:
+        - heading "我是腾讯员工" [level=3] [ref=f1e18]
+        - paragraph [ref=f1e19]: 管理员登录后管理通知、规则、工具与工单
+        - generic [ref=f1e20]: 前往登录 →
+  - paragraph [ref=f1e21]: 提示：服务商可直接查看内容；腾讯员工需输入管理员账号登录

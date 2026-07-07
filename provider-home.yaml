@@ -1,0 +1,96 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e22]:
+    - generic [ref=e24]:
+      - generic [ref=e25]: S
+      - generic [ref=e26]:
+        - generic [ref=e27]: 服务商工作台
+        - generic [ref=e28]: Service Provider · 只读模式
+    - navigation [ref=e29]:
+      - generic [ref=e30] [cursor=pointer]: 首页
+      - generic [ref=e31] [cursor=pointer]: 通知
+      - generic [ref=e32] [cursor=pointer]: 规则
+      - generic [ref=e33] [cursor=pointer]: 工具入口
+      - generic [ref=e34] [cursor=pointer]: 服务商工单
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]: 服
+        - generic [ref=e38]: 服务商
+      - button "退出" [ref=e39] [cursor=pointer]
+  - main [ref=e40]:
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - heading "欢迎使用服务商一体化工作台" [level=2] [ref=e44]
+          - paragraph [ref=e45]: 整合通知、规则、工具与工单，赋能电商服务商高效运营
+          - generic [ref=e46]:
+            - button "查看最新通知" [ref=e47] [cursor=pointer]
+            - button "提交工单" [ref=e48] [cursor=pointer]
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - generic [ref=e51]: "3"
+            - generic [ref=e52]: 已发布通知
+          - generic [ref=e53]:
+            - generic [ref=e54]: "7"
+            - generic [ref=e55]: 规则条目
+          - generic [ref=e56]:
+            - generic [ref=e57]: "7"
+            - generic [ref=e58]: 工具入口
+          - generic [ref=e59]:
+            - generic [ref=e60]: "2"
+            - generic [ref=e61]: 待处理工单
+      - generic [ref=e62]:
+        - heading "功能板块" [level=3] [ref=e64]
+        - generic [ref=e65]:
+          - generic [ref=e66] [cursor=pointer]:
+            - heading "通知板块" [level=4] [ref=e68]
+            - paragraph [ref=e69]: 重要通知同步，管理员可上传下发
+          - generic [ref=e70] [cursor=pointer]:
+            - heading "规则板块" [level=4] [ref=e72]
+            - paragraph [ref=e73]: 企业资质、报备流程、SAB、合伙人等日常内容
+          - generic [ref=e74] [cursor=pointer]:
+            - heading "工具入口" [level=4] [ref=e76]
+            - paragraph [ref=e77]: 二维码、百宝箱、最小作战单元、AI 工具一键跳转
+          - generic [ref=e78] [cursor=pointer]:
+            - heading "服务商工单" [level=4] [ref=e80]
+            - paragraph [ref=e81]: 加白、AI 辅助等申请，查阅与处理
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - heading "最新通知" [level=3] [ref=e84]
+          - generic [ref=e85] [cursor=pointer]: 查看全部 →
+        - generic [ref=e86]:
+          - generic [ref=e87] [cursor=pointer]:
+            - generic [ref=e88]: "!"
+            - generic [ref=e89]:
+              - generic [ref=e90]:
+                - text: 【重要】关于7月服务商报备流程优化的通知
+                - generic [ref=e91]: 置顶
+                - generic [ref=e92]: 政策通知
+              - generic [ref=e93]: 各位服务商伙伴： 为提升报备效率，自 2026 年 7 月 15 日起，报备流程做如下优化： 1. 报备材料由 5 项精简为 3 项，移除营业执照副本、税务登记证； 2. 报备审核时长从 3 个工作日缩短至 1 个工作日； 3. 紧急报备可走加急通道，4 小时内反馈。 请各位及时同步至内部团队。如有疑问，请通过工单板块提交咨询。
+              - generic [ref=e94]:
+                - generic [ref=e95]: 管理员
+                - generic [ref=e96]: 🕐 2026-07-05 09:30
+                - generic [ref=e97]: 👁 128 次查看
+          - generic [ref=e98] [cursor=pointer]:
+            - generic [ref=e99]: "!"
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - text: 【系统】服务商工作台 v1.0 上线公告
+                - generic [ref=e102]: 置顶
+                - generic [ref=e103]: 系统通知
+              - generic [ref=e104]: 电商服务商一体化工作台正式上线！ 本次上线包含四大核心板块： - 通知板块：重要通知统一同步 - 规则板块：日常规则集中管理 - 工具入口：一键直达常用工具 - 服务商工单：需求申请与处理 请各位服务商伙伴收藏本平台，及时查看通知。
+              - generic [ref=e105]:
+                - generic [ref=e106]: 管理员
+                - generic [ref=e107]: 🕐 2026-07-01 10:00
+                - generic [ref=e108]: 👁 96 次查看
+          - generic [ref=e109] [cursor=pointer]:
+            - generic [ref=e110]: 通
+            - generic [ref=e111]:
+              - generic [ref=e112]:
+                - text: 【活动】季度优秀服务商评选启动
+                - generic [ref=e113]: 活动通知
+              - generic [ref=e114]: 2026 年 Q2 优秀服务商评选已启动！ 评选维度：业绩贡献、合规表现、客户满意度。 获奖权益：年度合作伙伴优先续约、专属服务经理。 截止时间：2026 年 7 月 31 日。
+              - generic [ref=e115]:
+                - generic [ref=e116]: 管理员
+                - generic [ref=e117]: 🕐 2026-07-03 14:20
+                - generic [ref=e118]: 👁 42 次查看
+  - generic [ref=e119]: 已以服务商身份进入（只读模式）

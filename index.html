@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电商服务商一体化工作台</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- ============== 身份选择页 ============== -->
+    <div id="roleModal" class="role-mask">
+        <div class="role-card">
+            <div class="role-header">
+                <div class="role-logo">S</div>
+                <h1>欢迎使用服务商工作台</h1>
+                <p>请选择您的身份以进入对应工作区</p>
+            </div>
+            <div class="role-options">
+                <div class="role-option" data-role="provider">
+                    <div class="role-option-icon role-icon-provider">服</div>
+                    <div class="role-option-body">
+                        <h3>我是服务商</h3>
+                        <p>查看通知、规则与工具，提交需求工单</p>
+                        <span class="role-arrow">进入 →</span>
+                    </div>
+                </div>
+                <div class="role-option" data-role="tencent">
+                    <div class="role-option-icon role-icon-tencent">腾</div>
+                    <div class="role-option-body">
+                        <h3>我是腾讯员工</h3>
+                        <p>管理员登录后管理通知、规则、工具与工单</p>
+                        <span class="role-arrow">前往登录 →</span>
+                    </div>
+                </div>
+            </div>
+            <p class="role-tip">提示：服务商可直接查看内容；腾讯员工需输入管理员账号登录</p>
+        </div>
+    </div>
+
+    <!-- ============== 登录页（腾讯员工） ============== -->
+    <div id="loginModal" class="modal-mask" style="display:none;">
+        <div class="login-card">
+            <div class="login-back" id="btnBackToRole">← 返回选择身份</div>
+            <div class="login-logo">
+                <div class="logo-icon">S</div>
+                <h1>腾讯员工 · 管理员登录</h1>
+                <p class="login-subtitle">E-commerce Service Admin</p>
+            </div>
+            <div class="login-form">
+                <div class="form-item">
+                    <label>管理员账号</label>
+                    <input type="text" id="loginUser" placeholder="请输入管理员账号" value="admin" autocomplete="off">
+                </div>
+                <div class="form-item">
+                    <label>登录密码</label>
+                    <input type="password" id="loginPwd" placeholder="请输入密码" value="admin123">
+                </div>
+                <div class="form-item form-item-error" id="loginError" style="display:none;">
+                    账号或密码错误，请重试
+                </div>
+                <button class="btn btn-primary btn-block" id="btnLogin">登录</button>
+                <p class="login-tip">默认账号：admin / admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 顶部导航 -->
+    <header class="topbar" id="topbar" style="display:none;">
+        <div class="topbar-left">
+            <div class="brand">
+                <div class="brand-icon">S</div>
+                <div class="brand-text">
+                    <div class="brand-name">服务商工作台</div>
+                    <div class="brand-sub" id="brandSub">Service Provider Workbench</div>
+                </div>
+            </div>
+        </div>
+        <nav class="topbar-nav">
+            <a class="nav-item active" data-tab="home">首页</a>
+            <a class="nav-item" data-tab="notice">通知</a>
+            <a class="nav-item" data-tab="rule">规则</a>
+            <a class="nav-item" data-tab="tool">工具入口</a>
+            <a class="nav-item" data-tab="ticket">服务商工单<span class="nav-badge" id="ticketBadge" style="display:none;">0</span></a>
+            <a class="nav-item admin-only" data-tab="dashboard">数据看板</a>
+        </nav>
+        <div class="topbar-right">
+            <span class="user-info" id="userInfo">
+                <span class="user-avatar" id="userAvatar">S</span>
+                <span class="user-name" id="userName">服务商</span>
+            </span>
+            <button class="btn-text" id="btnLogout">退出</button>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="main" id="main" style="display:none;">
+
+        <!-- 首页 -->
+        <section class="page page-home active" data-page="home">
+            <div class="hero">
+                <div class="hero-text">
+                    <h2>欢迎使用服务商一体化工作台</h2>
+                    <p>整合通知、规则、工具与工单，赋能电商服务商高效运营</p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary" data-go="notice">查看最新通知</button>
+                        <button class="btn btn-ghost" data-go="ticket">提交工单</button>
+                    </div>
+                </div>
+                <div class="hero-stats hero-stats-horizontal">
+                    <div class="stat-card">
+                        <div class="stat-num" id="statNotice">0</div>
+                        <div class="stat-label">已发布通知</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" id="statRule">0</div>
+                        <div class="stat-label">规则条目</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" id="statTool">0</div>
+                        <div class="stat-label">工具入口</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num" id="statTicket">0</div>
+                        <div class="stat-label">待处理工单</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h3>功能板块</h3>
+                </div>
+                <div class="card-grid card-grid-4">
+                    <div class="feature-card" data-go="notice">
+                        <div class="feature-icon icon-notice"></div>
+                        <h4>通知板块</h4>
+                        <p>重要通知同步，管理员可上传下发</p>
+                    </div>
+                    <div class="feature-card" data-go="rule">
+                        <div class="feature-icon icon-rule"></div>
+                        <h4>规则板块</h4>
+                        <p>企业资质、报备流程、SAB、合伙人等日常内容</p>
+                    </div>
+                    <div class="feature-card" data-go="tool">
+                        <div class="feature-icon icon-tool"></div>
+                        <h4>工具入口</h4>
+                        <p>二维码、百宝箱、最小作战单元、AI 工具一键跳转</p>
+                    </div>
+                    <div class="feature-card" data-go="ticket">
+                        <div class="feature-icon icon-ticket"></div>
+                        <h4>服务商工单</h4>
+                        <p>加白、AI 辅助等申请，查阅与处理</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h3>最新通知</h3>
+                    <a class="link-more" data-go="notice">查看全部 →</a>
+                </div>
+                <div class="notice-list" id="homeNoticeList"></div>
+            </div>
+        </section>
+
+        <!-- 通知 -->
+        <section class="page" data-page="notice">
+            <div class="page-header">
+                <div>
+                    <h2>通知板块</h2>
+                    <p class="page-desc">重要通知同步，所有服务商必看</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-primary admin-only" id="btnAddNotice">+ 发布通知</button>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-tabs" id="noticeFilterTabs">
+                    <span class="filter-tab active" data-filter="all">全部</span>
+                    <span class="filter-tab" data-filter="pinned">置顶</span>
+                    <span class="filter-tab" data-filter="normal">普通</span>
+                </div>
+                <input type="text" class="search-input" id="noticeSearch" placeholder="搜索通知标题/内容...">
+            </div>
+
+            <div class="notice-list" id="noticeList"></div>
+            <div class="empty-state" id="noticeEmpty" style="display:none;">
+                <div class="empty-icon"></div>
+                <p>暂无通知</p>
+            </div>
+        </section>
+
+        <!-- 规则 -->
+        <section class="page" data-page="rule">
+            <div class="page-header">
+                <div>
+                    <h2>规则板块</h2>
+                    <p class="page-desc">日常使用的规则与内容管理</p>
+                </div>
+            </div>
+
+            <div class="rule-categories">
+                <div class="cat-card active" data-cat="qualify">
+                    <div class="cat-num">01</div>
+                    <h4>引入规则</h4>
+                    <p>企业资质要求、报备流程</p>
+                </div>
+                <div class="cat-card" data-cat="manage">
+                    <div class="cat-num">02</div>
+                    <h4>管理类内容</h4>
+                    <p>SAB、合伙人、外循环管理</p>
+                </div>
+                <div class="cat-card" data-cat="risk">
+                    <div class="cat-num">03</div>
+                    <h4>风控信息</h4>
+                    <p>违规 R 值、Y 值说明</p>
+                </div>
+                <div class="cat-card cat-card-add admin-only" id="btnAddCategory">
+                    <div class="cat-num">+</div>
+                    <h4>新增板块</h4>
+                    <p>点击添加新规则分类</p>
+                </div>
+            </div>
+
+            <div class="rule-panel">
+                <div class="rule-panel-header">
+                    <h3 id="rulePanelTitle">引入规则</h3>
+                    <div class="rule-panel-actions">
+                        <button class="btn btn-primary admin-only" id="btnAddRule">+ 新增内容</button>
+                    </div>
+                </div>
+                <div class="rule-list" id="ruleList"></div>
+                <div class="empty-state" id="ruleEmpty" style="display:none;">
+                    <div class="empty-icon"></div>
+                    <p>该分类下暂无内容</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 工具入口 -->
+        <section class="page" data-page="tool">
+            <div class="page-header">
+                <div>
+                    <h2>工具入口</h2>
+                    <p class="page-desc">日常工具一键跳转</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-primary admin-only" id="btnAddTool">+ 添加工具</button>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-tabs" id="toolFilterTabs">
+                    <span class="filter-tab active" data-tfilter="all">全部</span>
+                    <span class="filter-tab" data-tfilter="qrcode">二维码</span>
+                    <span class="filter-tab" data-tfilter="box">百宝箱</span>
+                    <span class="filter-tab" data-tfilter="unit">最小作战单元</span>
+                    <span class="filter-tab" data-tfilter="ai">AI 工具</span>
+                </div>
+            </div>
+
+            <div class="tool-grid" id="toolGrid"></div>
+            <div class="empty-state" id="toolEmpty" style="display:none;">
+                <div class="empty-icon"></div>
+                <p>暂无工具入口</p>
+            </div>
+        </section>
+        <!-- 工单 -->
+        <section class="page" data-page="ticket">
+            <div class="page-header">
+                <div>
+                    <h2>服务商工单</h2>
+                    <p class="page-desc" id="ticketPageDesc">服务商需求申请与处理</p>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-primary" id="btnAddTicket">+ 提交工单</button>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-tabs" id="ticketFilterTabs">
+                    <span class="filter-tab active" data-tkfilter="all">全部</span>
+                    <span class="filter-tab" data-tkfilter="pending">待处理</span>
+                    <span class="filter-tab" data-tkfilter="processing">处理中</span>
+                    <span class="filter-tab" data-tkfilter="done">已完成</span>
+                </div>
+            </div>
+
+            <div class="ticket-list" id="ticketList"></div>
+            <div class="empty-state" id="ticketEmpty" style="display:none;">
+                <div class="empty-icon"></div>
+                <p>暂无工单</p>
+            </div>
+        </section>
+
+        <!-- 数据看板（仅管理员可见） -->
+        <section class="page" data-page="dashboard">
+            <div class="page-header">
+                <div>
+                    <h2>数据看板</h2>
+                    <p class="page-desc">通知与规则的查看数据总览</p>
+                </div>
+            </div>
+
+            <div class="dashboard-stats" id="dashboardStats"></div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h3>通知查看数据</h3>
+                </div>
+                <div class="view-list" id="dashboardNoticeList"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h3>规则查看数据</h3>
+                </div>
+                <div class="view-list" id="dashboardRuleList"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 通用弹窗：通知 -->
+    <div class="modal" id="noticeModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="noticeModalTitle">发布通知</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>通知标题<span class="req">*</span></label>
+                    <input type="text" id="noticeTitle" placeholder="请输入通知标题">
+                </div>
+                <div class="form-item">
+                    <label>通知分类</label>
+                    <select id="noticeCategory">
+                        <option value="system">系统通知</option>
+                        <option value="policy">政策通知</option>
+                        <option value="activity">活动通知</option>
+                        <option value="urgent">紧急通知</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>通知内容<span class="req">*</span></label>
+                    <textarea id="noticeContent" rows="6" placeholder="请输入通知详细内容..."></textarea>
+                </div>
+                <div class="form-item form-item-inline">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="noticePinned"> 设为置顶
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close>取消</button>
+                <button class="btn btn-primary" id="btnSaveNotice">发布</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通用弹窗：规则 -->
+    <div class="modal" id="ruleModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="ruleModalTitle">新增内容</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>标题<span class="req">*</span></label>
+                    <input type="text" id="ruleTitle" placeholder="请输入标题">
+                </div>
+                <div class="form-item">
+                    <label>标签</label>
+                    <div class="tag-chips" id="ruleTagChips">
+                        <span class="tag-chip" data-tag="必读">必读</span>
+                        <span class="tag-chip" data-tag="流程">流程</span>
+                        <span class="tag-chip" data-tag="管理">管理</span>
+                        <span class="tag-chip" data-tag="风控">风控</span>
+                    </div>
+                    <input type="text" id="ruleTag" placeholder="可手动输入自定义标签，回车添加">
+                </div>
+                <div class="form-item">
+                    <label>详细内容<span class="req">*</span></label>
+                    <textarea id="ruleContent" rows="8" placeholder="请输入详细内容..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close>取消</button>
+                <button class="btn btn-primary" id="btnSaveRule">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通用弹窗：工具 -->
+    <div class="modal" id="toolModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="toolModalTitle">添加工具</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>工具名称<span class="req">*</span></label>
+                    <input type="text" id="toolName" placeholder="如：行业问题百宝箱">
+                </div>
+                <div class="form-item">
+                    <label>工具类型<span class="req">*</span></label>
+                    <select id="toolType">
+                        <option value="qrcode">二维码</option>
+                        <option value="box">百宝箱</option>
+                        <option value="unit">最小作战单元</option>
+                        <option value="ai">AI 工具</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>跳转链接 / 二维码内容<span class="req">*</span></label>
+                    <input type="text" id="toolUrl" placeholder="https:// 或 二维码指向内容">
+                </div>
+                <div class="form-item">
+                    <label>说明</label>
+                    <textarea id="toolDesc" rows="3" placeholder="工具用途说明..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close>取消</button>
+                <button class="btn btn-primary" id="btnSaveTool">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通用弹窗：工单 -->
+    <div class="modal" id="ticketModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="ticketModalTitle">提交工单</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>服务商名称<span class="req">*</span></label>
+                    <input type="text" id="ticketProvider" placeholder="请输入服务商名称">
+                </div>
+                <div class="form-item">
+                    <label>需求类型<span class="req">*</span></label>
+                    <select id="ticketType">
+                        <option value="whitelist">加白申请</option>
+                        <option value="ai">AI 深度辅助</option>
+                        <option value="tool">工具申请</option>
+                        <option value="other">其他需求</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>需求描述<span class="req">*</span></label>
+                    <textarea id="ticketDesc" rows="5" placeholder="请详细描述您的需求..."></textarea>
+                </div>
+                <div class="form-item">
+                    <label>联系方式</label>
+                    <input type="text" id="ticketContact" placeholder="手机号 / 邮箱 / 微信">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close>取消</button>
+                <button class="btn btn-primary" id="btnSaveTicket">提交</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通用弹窗：新增板块 -->
+    <div class="modal" id="categoryModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">新增规则板块</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>板块名称<span class="req">*</span></label>
+                    <input type="text" id="categoryName" placeholder="如：财务管理 / 培训资料">
+                </div>
+                <div class="form-item">
+                    <label>板块说明</label>
+                    <input type="text" id="categoryDesc" placeholder="一句话描述该板块的用途">
+                </div>
+                <div class="form-item" id="categoryKeyWrap" style="display:none;">
+                    <label>板块标识<span class="req">*</span>（英文，自动生成）</label>
+                    <input type="text" id="categoryKey" placeholder="cat_xxx">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close>取消</button>
+                <button class="btn btn-primary" id="btnSaveCategory">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 工单详情/处理弹窗 -->
+    <div class="modal" id="ticketDetailModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>工单详情</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body" id="ticketDetailBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close>关闭</button>
+                <button class="btn btn-primary admin-only-btn" id="btnProcessTicket">标记处理中</button>
+                <button class="btn btn-success admin-only-btn" id="btnCompleteTicket">标记完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知详情弹窗 -->
+    <div class="modal" id="noticeDetailModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card modal-card-lg">
+            <div class="modal-header">
+                <h3 id="noticeDetailTitle">通知详情</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body" id="noticeDetailBody"></div>
+            <div class="modal-footer" id="noticeDetailFooter">
+                <button class="btn btn-ghost" data-close>关闭</button>
+                <button class="btn btn-primary admin-only-btn" id="btnEditNoticeFromDetail" style="display:none;">编辑</button>
+                <button class="btn btn-danger admin-only-btn" id="btnDeleteNoticeFromDetail" style="display:none;">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 规则详情弹窗 -->
+    <div class="modal" id="ruleDetailModal" style="display:none;">
+        <div class="modal-mask"></div>
+        <div class="modal-card modal-card-lg">
+            <div class="modal-header">
+                <h3 id="ruleDetailTitle">规则详情</h3>
+                <button class="modal-close" data-close>×</button>
+            </div>
+            <div class="modal-body" id="ruleDetailBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" data-close>关闭</button>
+                <button class="btn btn-primary admin-only-btn" id="btnEditRule" style="display:none;">编辑</button>
+                <button class="btn btn-danger admin-only-btn" id="btnDeleteRule" style="display:none;">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast" style="display:none;"></div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
