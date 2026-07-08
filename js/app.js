@@ -143,8 +143,26 @@ const App = {
         document.querySelectorAll('[data-go]').forEach(el => {
             el.addEventListener('click', e => {
                 const t = el.dataset.go;
-                if (t) this.goTo(t);
+                if (!t) return;
+                // 在首页内：用 data-go 作为 subnav 切换对应板块
+                if (el.classList.contains('subnav-item') && el.closest('.subnav')) {
+                    this.switchHomeSection(t);
+                    return;
+                }
+                this.goTo(t, el);
             });
+        });
+    },
+
+    switchHomeSection(target) {
+        // 切换 subnav 高亮
+        document.querySelectorAll('.subnav .subnav-item').forEach(it => {
+            it.classList.toggle('active', it.dataset.go === target);
+        });
+        // 切换首页内的 sub-block 显隐
+        const blocks = document.querySelectorAll('.page-home .home-section-block');
+        blocks.forEach(b => {
+            b.style.display = (b.dataset.section === target) ? '' : 'none';
         });
     },
 
@@ -157,9 +175,13 @@ const App = {
         });
     },
 
-    goTo(page) {
+    goTo(page, e) {
         // 服务商不允许访问数据看板
         if (page === 'dashboard' && !this.isAdmin) return;
+        // 如果带 bbxfilter（来自首页内"全部"链接），先切换行业
+        if (page === 'baibaoxiang' && e && e.dataset && e.dataset.bbxfilter) {
+            this.currentBbxFilter = e.dataset.bbxfilter;
+        }
         this.currentPage = page;
         document.querySelectorAll('.topbar-nav .nav-item').forEach(n => {
             n.classList.toggle('active', n.dataset.tab === page);
@@ -209,20 +231,112 @@ const App = {
         }
         // 第二板块：必读信息（按板块分类）
         this.renderHomeRules();
+        // 板块 2：百宝箱（按行业一个模块一个模块展示必读）
+        this.renderHomeBbx();
+        // 板块 3：工具中心（最常用的几个工具卡片 + 全部）
+        this.renderHomeTool();
+        // 板块 4：工单中心（进行中的工单窗格 + 全部）
+        this.renderHomeTicket();
         // Banner 自动轮播
         this.startBannerRotate();
         this.applyRoleUI();
     },
 
-    renderHomeRules() {
-        const cat = this.currentHomeRuleCat || 'qualify';
-        const list = document.getElementById('homeRulesList');
-        const tabs = document.querySelectorAll('#homeRulesTabs .home-rules-tab');
-        tabs.forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
-        // 标记"必读"：tag === '必读' 或 category === 'qualify'/'risk'（默认全部展示）
-        const items = (this.data.rules || []).filter(r => r.category === cat);
+    renderHomeBbx() {
+        const wrap = document.getElementById('homeBbxWrap');
+        if (!wrap) return;
+        // 仅展示有必读文档的行业
+        const groups = Object.keys(BBX_CATEGORIES).map(key => {
+            const items = (this.data.baibaoxiang || []).filter(b => b.category === key && b.mustRead);
+            return { key, name: BBX_CATEGORIES[key].name, items };
+        }).filter(g => g.items.length > 0);
+        if (groups.length === 0) {
+            wrap.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>暂无必读文档</p></div>';
+            return;
+        }
+        wrap.innerHTML = groups.map(g => `
+            <div class="home-bbx-module">
+                <div class="home-bbx-module-head">
+                    <div class="home-bbx-module-title">
+                        <span class="bbx-must-flag">必读</span>
+                        ${this.escapeHtml(g.name)}
+                    </div>
+                    <a class="home-bbx-module-link" data-go="baibaoxiang" data-bbxfilter="${g.key}">全部 →</a>
+                </div>
+                <div class="home-bbx-module-list">
+                    ${g.items.map(b => `
+                        <a class="home-bbx-module-item" href="${this.escapeAttr(b.url)}" target="_blank" rel="noopener">
+                            <span class="bbx-must-flag">必读</span>
+                            ${this.escapeHtml(b.name)}
+                        </a>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+        // 给"全部"链接绑定点击事件
+        wrap.querySelectorAll('.home-bbx-module-link').forEach(el => {
+            el.addEventListener('click', e => {
+                e.preventDefault();
+                const t = el.dataset.go;
+                this.goTo(t, el);
+            });
+        });
+    },
+
+    renderHomeTool() {
+        const grid = document.getElementById('homeToolGrid');
+        if (!grid) return;
+        // 最常用：取前 4 个工具（百宝箱/工具中心专用卡片）
+        const items = (this.data.tools || []).slice(0, 8);
         if (items.length === 0) {
-            list.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>该分类下暂无内容</p></div>';
+            grid.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>暂无工具</p></div>';
+            return;
+        }
+        grid.innerHTML = items.map(t => `
+            <a class="home-tool-item" href="${this.escapeAttr(t.url)}" target="_blank" rel="noopener">
+                <div class="home-tool-icon home-tool-icon-blue">${this.escapeHtml((t.name || '?').charAt(0))}</div>
+                <div class="home-tool-name">${this.escapeHtml(t.name)}</div>
+            </a>
+        `).join('');
+    },
+
+    renderHomeTicket() {
+        const grid = document.getElementById('homeTicketGrid');
+        if (!grid) return;
+        // 进行中：待处理 + 处理中，按状态和时间排序
+        const items = (this.data.tickets || [])
+            .filter(t => t.status === 'pending' || t.status === 'processing')
+            .sort((a, b) => {
+                if (a.status === 'pending' && b.status !== 'pending') return -1;
+                if (a.status !== 'pending' && b.status === 'pending') return 1;
+                return (b.createdAt || '').localeCompare(a.createdAt || '');
+            });
+        if (items.length === 0) {
+            grid.innerHTML = '<div class="home-ticket-cell-empty">暂无进行中的工单</div>';
+            return;
+        }
+        grid.innerHTML = items.map(t => `
+            <div class="home-ticket-cell" data-id="${t.id}">
+                <div class="home-ticket-cell-head">
+                    <span class="home-ticket-cell-id">${this.escapeHtml(t.id)}</span>
+                    <span class="status-tag status-${t.status}">${(TICKET_STATUS[t.status] || {}).name || t.status}</span>
+                </div>
+                <div class="home-ticket-cell-provider">${this.escapeHtml(t.provider)}</div>
+                <div class="home-ticket-cell-desc">${this.escapeHtml(t.desc || '')}</div>
+            </div>
+        `).join('');
+        grid.querySelectorAll('.home-ticket-cell').forEach(el => {
+            el.addEventListener('click', () => this.openTicketDetail(el.dataset.id));
+        });
+    },
+
+    renderHomeRules() {
+        // 首页内的「必读信息」改为统一展示前 N 条规则（不再按 tab 切换）
+        const list = document.getElementById('homeRulesList');
+        if (!list) return;
+        const items = (this.data.rules || []).slice(0, 5);
+        if (items.length === 0) {
+            list.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>暂无必读信息</p></div>';
             return;
         }
         list.innerHTML = items.map(r => this.ruleItemHtml(r)).join('');

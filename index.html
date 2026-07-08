@@ -110,7 +110,7 @@
                 <div class="home-banner-dots" id="homeBannerDots"></div>
             </div>
 
-            <!-- 二级红字导航 -->
+            <!-- 二级蓝字导航（首页内板块切换，不跳转） -->
             <div class="subnav">
                 <a class="subnav-item active" data-go="notice">最新通知</a>
                 <a class="subnav-item" data-go="baibaoxiang">百宝箱</a>
@@ -118,75 +118,73 @@
                 <a class="subnav-item" data-go="ticket">工单中心</a>
             </div>
 
-            <!-- 第一板块：最新通知 + 激励活动 + 常用工具 -->
-            <div class="home-grid-3">
-                <div class="home-block">
-                    <div class="home-block-head">
-                        <h3>最新通知</h3>
-                        <a class="link-more" data-go="notice">全部 →</a>
+            <!-- 板块 1：最新通知 -->
+            <div class="home-section-block" data-section="notice">
+                <div class="home-grid-3">
+                    <div class="home-block">
+                        <div class="home-block-head">
+                            <h3>最新通知</h3>
+                            <a class="link-more" data-go="notice">全部 →</a>
+                        </div>
+                        <div class="home-block-body" id="homeNoticeList"></div>
                     </div>
-                    <div class="home-block-body" id="homeNoticeList"></div>
-                </div>
 
-                <div class="home-block">
-                    <div class="home-block-head">
-                        <h3>激励活动</h3>
-                        <a class="link-more" data-go="notice">全部 →</a>
+                    <div class="home-block">
+                        <div class="home-block-head">
+                            <h3>激励活动</h3>
+                            <a class="link-more" data-go="notice">全部 →</a>
+                        </div>
+                        <div class="home-block-body" id="homeActivityList">
+                            <div class="home-activity-item" data-go="notice">
+                                <div class="home-activity-title">季度优秀服务商评选</div>
+                                <div class="home-activity-time">截止 2026-07-31</div>
+                            </div>
+                            <div class="home-activity-item" data-go="notice">
+                                <div class="home-activity-title">新商成长陪跑激励计划</div>
+                                <div class="home-activity-time">进行中</div>
+                            </div>
+                            <div class="home-activity-item" data-go="notice">
+                                <div class="home-activity-title">热招品牌权益汇总</div>
+                                <div class="home-activity-time">长期有效</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="home-block-body" id="homeActivityList">
-                        <div class="home-activity-item" data-go="notice">
-                            <div class="home-activity-title">季度优秀服务商评选</div>
-                            <div class="home-activity-time">截止 2026-07-31</div>
-                        </div>
-                        <div class="home-activity-item" data-go="notice">
-                            <div class="home-activity-title">新商成长陪跑激励计划</div>
-                            <div class="home-activity-time">进行中</div>
-                        </div>
-                        <div class="home-activity-item" data-go="notice">
-                            <div class="home-activity-title">热招品牌权益汇总</div>
-                            <div class="home-activity-time">长期有效</div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="home-block">
-                    <div class="home-block-head">
-                        <h3>常用工具</h3>
-                        <span class="home-block-tip">最新消息和常用入口</span>
-                    </div>
-                    <div class="home-tools-grid">
-                        <a class="home-tool-item" href="https://miaowen.qq.com/" target="_blank" rel="noopener">
-                            <div class="home-tool-icon home-tool-icon-blue">妙</div>
-                            <div class="home-tool-name">妙问</div>
-                        </a>
-                        <a class="home-tool-item" href="https://csig.lexiangla.com/spaces/5365255fd79044be9d61c3ba6b898c69" target="_blank" rel="noopener">
-                            <div class="home-tool-icon home-tool-icon-green">库</div>
-                            <div class="home-tool-name">电商鹅宝知识库</div>
-                        </a>
-                        <a class="home-tool-item" data-go="baibaoxiang">
-                            <div class="home-tool-icon home-tool-icon-purple">箱</div>
-                            <div class="home-tool-name">百宝箱</div>
-                        </a>
-                        <a class="home-tool-item" data-go="tool">
-                            <div class="home-tool-icon home-tool-icon-orange">具</div>
-                            <div class="home-tool-name">工具中心</div>
-                        </a>
+                    <div class="home-block">
+                        <div class="home-block-head">
+                            <h3>必读信息</h3>
+                            <a class="link-more" data-go="notice">全部 →</a>
+                        </div>
+                        <div class="home-rules-list" id="homeRulesList"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- 第二板块：必读信息（按板块分类的规则） -->
-            <div class="section">
-                <div class="section-header">
-                    <h3>必读信息</h3>
-                    <span class="section-sub">管理模块中的必读规则，按板块集中展示</span>
+            <!-- 板块 2：百宝箱（按行业一个模块一个模块展示必读） -->
+            <div class="home-section-block" data-section="baibaoxiang" style="display:none;">
+                <div class="home-bbx-wrap" id="homeBbxWrap"></div>
+            </div>
+
+            <!-- 板块 3：工具中心（最常用的几个工具卡片 + 全部） -->
+            <div class="home-section-block" data-section="tool" style="display:none;">
+                <div class="home-block home-block-full">
+                    <div class="home-block-head">
+                        <h3>常用工具</h3>
+                        <a class="link-more" data-go="tool">全部 →</a>
+                    </div>
+                    <div class="home-tools-grid" id="homeToolGrid"></div>
                 </div>
-                <div class="home-rules-tabs" id="homeRulesTabs">
-                    <span class="home-rules-tab active" data-cat="qualify">引入规则</span>
-                    <span class="home-rules-tab" data-cat="manage">管理类内容</span>
-                    <span class="home-rules-tab" data-cat="risk">风控信息</span>
+            </div>
+
+            <!-- 板块 4：工单中心（进行中的工单窗格 + 全部） -->
+            <div class="home-section-block" data-section="ticket" style="display:none;">
+                <div class="home-block home-block-full">
+                    <div class="home-block-head">
+                        <h3>进行中的工单</h3>
+                        <a class="link-more" data-go="ticket">全部 →</a>
+                    </div>
+                    <div class="home-ticket-grid" id="homeTicketGrid"></div>
                 </div>
-                <div class="home-rules-list" id="homeRulesList"></div>
             </div>
         </section>
 
