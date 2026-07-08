@@ -265,7 +265,7 @@
             <div class="page-header">
                 <div>
                     <h2>百宝箱</h2>
-                    <p class="page-desc">按行业分区的常用文档与知识库入口</p>
+                    <p class="page-desc">按行业分区的必读文档与知识库入口</p>
                 </div>
                 <div class="page-actions">
                     <button class="btn btn-primary admin-only" id="btnAddBaibaoxiang">+ 新增链接</button>
@@ -285,10 +285,12 @@
                 </div>
             </div>
 
+            <div class="section-sub" id="bbxSectionTitle" style="margin-bottom: 14px; padding-left: 4px; font-size: 13px; color: #ef4444; font-weight: 500;">服饰运动 · 必读文档</div>
+
             <div class="bbx-grid" id="bbxGrid"></div>
             <div class="empty-state" id="bbxEmpty" style="display:none;">
                 <div class="empty-icon"></div>
-                <p>该行业下暂无链接</p>
+                <p id="bbxEmptyText">该行业暂无「必读」文档</p>
             </div>
         </section>
 
@@ -381,7 +383,8 @@
 
             <div class="filter-bar">
                 <div class="filter-tabs" id="ticketFilterTabs">
-                    <span class="filter-tab active" data-tkfilter="all">全部</span>
+                    <span class="filter-tab" data-tkfilter="all">全部</span>
+                    <span class="filter-tab active" data-tkfilter="active">进行中</span>
                     <span class="filter-tab" data-tkfilter="pending">待处理</span>
                     <span class="filter-tab" data-tkfilter="processing">处理中</span>
                     <span class="filter-tab" data-tkfilter="done">已完成</span>
@@ -567,6 +570,11 @@
                 <div class="form-item">
                     <label>说明</label>
                     <textarea id="bbxDesc" rows="3" placeholder="链接内容描述..."></textarea>
+                </div>
+                <div class="form-item form-item-inline">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="bbxMustRead"> 标注为「必读」文档（仅显示在该行业的必读列表中）
+                    </label>
                 </div>
             </div>
             <div class="modal-footer">

@@ -9,7 +9,7 @@ const App = {
     currentBbxFilter: 'apparel',
     currentNoticeFilter: 'all',
     currentToolFilter: 'all',
-    currentTicketFilter: 'all',
+    currentTicketFilter: 'active',
     noticeSearch: '',
     editNoticeId: null,
     editRuleId: null,
@@ -570,20 +570,29 @@ const App = {
 
     renderBaibaoxiang() {
         const cat = this.currentBbxFilter || 'apparel';
+        const catInfo = BBX_CATEGORIES[cat] || { name: cat };
+        const sectionTitle = document.getElementById('bbxSectionTitle');
+        if (sectionTitle) sectionTitle.textContent = catInfo.name + ' · 必读文档';
         const list = document.getElementById('bbxGrid');
         const empty = document.getElementById('bbxEmpty');
-        const items = (this.data.baibaoxiang || []).filter(b => b.category === cat);
+        // 只展示当前行业下"必读"的文档
+        const items = (this.data.baibaoxiang || []).filter(b => b.category === cat && b.mustRead);
         if (items.length === 0) {
             list.innerHTML = '';
             empty.style.display = 'block';
+            const txt = document.getElementById('bbxEmptyText');
+            if (txt) txt.textContent = '该行业暂无「必读」文档';
         } else {
             empty.style.display = 'none';
             list.innerHTML = items.map(b => `
-                <a class="bbx-card" href="${this.escapeAttr(b.url)}" target="_blank" rel="noopener" data-id="${b.id}">
+                <a class="bbx-card bbx-card-must" href="${this.escapeAttr(b.url)}" target="_blank" rel="noopener" data-id="${b.id}">
                     ${this.isAdmin ? '<button class="item-del-btn bbx-del" data-id="' + b.id + '" title="删除链接">🗑</button>' : ''}
-                    <div class="bbx-card-icon">箱</div>
+                    <div class="bbx-card-icon">${this.escapeHtml((b.name || '?').charAt(0))}</div>
                     <div class="bbx-card-body">
-                        <div class="bbx-card-title">${this.escapeHtml(b.name)}</div>
+                        <div class="bbx-card-title">
+                            <span class="bbx-must-flag">必读</span>
+                            ${this.escapeHtml(b.name)}
+                        </div>
                         <div class="bbx-card-desc">${this.escapeHtml(b.desc || '')}</div>
                     </div>
                     <div class="bbx-card-arrow">→</div>
@@ -609,6 +618,7 @@ const App = {
         document.getElementById('bbxCategory').value = item ? item.category : (this.currentBbxFilter || 'apparel');
         document.getElementById('bbxUrl').value = item ? item.url : '';
         document.getElementById('bbxDesc').value = item ? item.desc : '';
+        document.getElementById('bbxMustRead').checked = item ? !!item.mustRead : true;
         document.getElementById('bbxModal').style.display = 'flex';
     },
 
@@ -617,16 +627,17 @@ const App = {
         const category = document.getElementById('bbxCategory').value;
         const url = document.getElementById('bbxUrl').value.trim();
         const desc = document.getElementById('bbxDesc').value.trim();
+        const mustRead = document.getElementById('bbxMustRead').checked;
         if (!name) return this.toast('请输入链接名称', 'error');
         if (!url) return this.toast('请输入跳转链接', 'error');
         if (!this.data.baibaoxiang) this.data.baibaoxiang = [];
         if (this.editBbxId) {
             const b = this.data.baibaoxiang.find(x => x.id === this.editBbxId);
-            if (b) Object.assign(b, { name, category, url, desc });
+            if (b) Object.assign(b, { name, category, url, desc, mustRead });
         } else {
             this.data.baibaoxiang.push({
                 id: 'bbx_' + Date.now().toString(36),
-                name, category, url, desc,
+                name, category, url, desc, mustRead,
                 author: '管理员',
                 createdAt: this.formatTime()
             });
@@ -1261,10 +1272,22 @@ const App = {
 
     refreshTicket() {
         let items = [...this.data.tickets];
-        if (this.currentTicketFilter !== 'all') {
+        if (this.currentTicketFilter === 'active') {
+            // 进行中：包含待处理 + 处理中
+            items = items.filter(t => t.status === 'pending' || t.status === 'processing');
+        } else if (this.currentTicketFilter !== 'all') {
             items = items.filter(t => t.status === this.currentTicketFilter);
         }
-        items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        // 进行中时，待处理排在前面（更紧急），其他按时间倒序
+        if (this.currentTicketFilter === 'active') {
+            items.sort((a, b) => {
+                if (a.status === 'pending' && b.status !== 'pending') return -1;
+                if (a.status !== 'pending' && b.status === 'pending') return 1;
+                return (b.createdAt || '').localeCompare(a.createdAt || '');
+            });
+        } else {
+            items.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+        }
         const list = document.getElementById('ticketList');
         const empty = document.getElementById('ticketEmpty');
         if (items.length === 0) {

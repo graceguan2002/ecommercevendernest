@@ -500,6 +500,23 @@ ul, ol { list-style: none; }
     transform: translateY(-2px);
     box-shadow: 0 4px 14px rgba(59, 130, 246, 0.12);
 }
+.bbx-card-must {
+    border-left: 3px solid var(--danger, #ef4444);
+    background: linear-gradient(90deg, rgba(254, 226, 226, 0.18), transparent 60%);
+}
+.bbx-must-flag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--danger, #ef4444);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
 .bbx-card-icon {
     width: 44px; height: 44px;
     border-radius: 10px;

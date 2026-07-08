@@ -110,26 +110,26 @@ const DEFAULT_DATA = {
         { id: 't_006', name: 'AI 智能客服', type: 'ai', url: 'https://example.com/ai/cs', desc: '7x24 小时 AI 自动应答客服', author: '管理员', createdAt: '2026-07-01 10:00' },
         { id: 't_007', name: 'AI 素材生成', type: 'ai', url: 'https://example.com/ai/material', desc: '一键生成营销文案与海报', author: '管理员', createdAt: '2026-07-01 10:00' }
     ],
-    // 百宝箱：8 个行业分区下的链接集合
+    // 百宝箱：8 个行业分区下的链接集合（mustRead=true 标注为「必读」文档）
     baibaoxiang: [
         // 服饰运动
-        { id: 'bbx_001', name: '服饰运动问题百宝箱', category: 'apparel', url: 'https://example.com/bbx/apparel', desc: '服饰类目高频问题与解决方案', author: '管理员', createdAt: '2026-07-01 10:00' },
-        { id: 'bbx_002', name: '运动户外 SOP 手册', category: 'apparel', url: 'https://example.com/bbx/sport-sop', desc: '运动户外行业标准操作流程', author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_001', name: '服饰运动问题百宝箱', category: 'apparel', url: 'https://example.com/bbx/apparel', desc: '服饰类目高频问题与解决方案', mustRead: true, author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_002', name: '运动户外 SOP 手册', category: 'apparel', url: 'https://example.com/bbx/sport-sop', desc: '运动户外行业标准操作流程', mustRead: true, author: '管理员', createdAt: '2026-07-01 10:00' },
         // 美妆个护
-        { id: 'bbx_003', name: '美妆个护合规手册', category: 'beauty', url: 'https://example.com/bbx/beauty', desc: '美妆个护类目合规要求与话术', author: '管理员', createdAt: '2026-07-01 10:00' },
-        { id: 'bbx_004', name: '美妆爆款打造指南', category: 'beauty', url: 'https://example.com/bbx/beauty-hot', desc: '美妆个护爆款方法论', author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_003', name: '美妆个护合规手册', category: 'beauty', url: 'https://example.com/bbx/beauty', desc: '美妆个护类目合规要求与话术', mustRead: true, author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_004', name: '美妆爆款打造指南', category: 'beauty', url: 'https://example.com/bbx/beauty-hot', desc: '美妆个护爆款方法论', mustRead: false, author: '管理员', createdAt: '2026-07-01 10:00' },
         // 食品饮料
-        { id: 'bbx_005', name: '食品饮料资质清单', category: 'food', url: 'https://example.com/bbx/food', desc: '食品类目入驻所需资质与流程', author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_005', name: '食品饮料资质清单', category: 'food', url: 'https://example.com/bbx/food', desc: '食品类目入驻所需资质与流程', mustRead: true, author: '管理员', createdAt: '2026-07-01 10:00' },
         // 消电日百
-        { id: 'bbx_006', name: '消电日百百宝箱', category: 'digital', url: 'https://example.com/bbx/digital', desc: '消电类目运营常见问题', author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_006', name: '消电日百百宝箱', category: 'digital', url: 'https://example.com/bbx/digital', desc: '消电类目运营常见问题', mustRead: true, author: '管理员', createdAt: '2026-07-01 10:00' },
         // 图书
-        { id: 'bbx_007', name: '图书出版合规说明', category: 'book', url: 'https://example.com/bbx/book', desc: '图书类目资质与版权要求', author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_007', name: '图书出版合规说明', category: 'book', url: 'https://example.com/bbx/book', desc: '图书类目资质与版权要求', mustRead: true, author: '管理员', createdAt: '2026-07-01 10:00' },
         // 家居
-        { id: 'bbx_008', name: '家居行业百宝箱', category: 'home', url: 'https://example.com/bbx/home', desc: '家居类目高频问题合集', author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_008', name: '家居行业百宝箱', category: 'home', url: 'https://example.com/bbx/home', desc: '家居类目高频问题合集', mustRead: true, author: '管理员', createdAt: '2026-07-01 10:00' },
         // 车后
-        { id: 'bbx_009', name: '车后市场运营手册', category: 'car', url: 'https://example.com/bbx/car', desc: '车后类目市场运营与合规', author: '管理员', createdAt: '2026-07-01 10:00' },
+        { id: 'bbx_009', name: '车后市场运营手册', category: 'car', url: 'https://example.com/bbx/car', desc: '车后类目市场运营与合规', mustRead: true, author: '管理员', createdAt: '2026-07-01 10:00' },
         // 其他
-        { id: 'bbx_010', name: '其他类目补充资料', category: 'other', url: 'https://example.com/bbx/other', desc: '其他类目参考资料', author: '管理员', createdAt: '2026-07-01 10:00' }
+        { id: 'bbx_010', name: '其他类目补充资料', category: 'other', url: 'https://example.com/bbx/other', desc: '其他类目参考资料', mustRead: false, author: '管理员', createdAt: '2026-07-01 10:00' }
     ],
     tickets: [
         { id: 'TK20260705001', provider: '上海星河电商', type: 'whitelist', desc: '申请「618 大促」活动白名单，涉及 50 个重点客户的促销加白。', contact: 'zhangsan@xinghe.com', status: 'pending', author: '管理员', createdAt: '2026-07-05 14:20', timeline: [{ time: '2026-07-05 14:20', text: '工单创建' }] },
