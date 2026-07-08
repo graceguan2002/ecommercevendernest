@@ -486,37 +486,37 @@ ul, ol { list-style: none; }
 /* 首页内 - 百宝箱（一个行业一个模块） */
 .home-bbx-wrap {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 14px;
 }
 .home-bbx-module {
     background: #fff;
     border: 1px solid var(--border, #e2e8f0);
-    border-radius: 10px;
-    padding: 16px 18px;
+    border-radius: 8px;
+    padding: 10px 12px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    min-height: 160px;
+    gap: 6px;
 }
 .home-bbx-module-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px dashed var(--border, #e2e8f0);
-    padding-bottom: 8px;
+    padding-bottom: 6px;
 }
 .home-bbx-module-title {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 15px;
+    gap: 6px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--text-1, #1e293b);
 }
-.home-bbx-module-title .bbx-must-flag { margin-right: 0; }
+.home-bbx-module-title .bbx-must-flag { margin-right: 0; font-size: 10px; padding: 1px 6px; }
 .home-bbx-module-link {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--primary, #2563eb);
     cursor: pointer;
     text-decoration: none;
@@ -525,22 +525,43 @@ ul, ol { list-style: none; }
 .home-bbx-module-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 .home-bbx-module-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
+    gap: 4px;
+    font-size: 12px;
     color: var(--text-1, #1e293b);
     text-decoration: none;
-    padding: 4px 0;
+    padding: 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .home-bbx-module-item:hover { color: var(--primary, #2563eb); }
+.home-bbx-module-item .bbx-must-flag { display: none; }
 .home-bbx-module-empty {
     font-size: 12px;
     color: var(--text-3, #94a3b8);
     padding: 8px 0;
+}
+
+/* 首页内 - 分隔标题（如「必读信息」） */
+.home-section-divider {
+    display: flex;
+    align-items: center;
+    margin: 24px 0 12px;
+    color: var(--text-1, #1e293b);
+    font-size: 15px;
+    font-weight: 600;
+}
+.home-section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border, #e2e8f0);
+    margin-left: 14px;
 }
 
 /* 首页内 - 工单窗格 */
@@ -601,6 +622,31 @@ ul, ol { list-style: none; }
 /* 首页全宽 block */
 .home-block-full {
     grid-column: 1 / -1;
+}
+
+/* 首页内 - 工具/工单 区块内的网格（缩小版） */
+.home-section-block .home-ticket-grid {
+    padding: 12px;
+    gap: 10px;
+}
+.home-section-block .home-tools-grid {
+    padding: 12px;
+    gap: 8px;
+}
+.home-section-block .home-tool-item {
+    padding: 10px 6px;
+    gap: 6px;
+}
+.home-section-block .home-tool-icon {
+    width: 32px; height: 32px;
+    font-size: 13px;
+}
+.home-section-block .home-tool-name {
+    font-size: 12px;
+}
+.home-section-block .home-ticket-cell {
+    padding: 10px 12px;
+    gap: 6px;
 }
 
 .bbx-card {

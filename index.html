@@ -152,17 +152,25 @@
 
                     <div class="home-block">
                         <div class="home-block-head">
-                            <h3>必读信息</h3>
-                            <a class="link-more" data-go="notice">全部 →</a>
+                            <h3>常用工具</h3>
+                            <span class="home-block-tip">最新消息和常用入口</span>
                         </div>
-                        <div class="home-rules-list" id="homeRulesList"></div>
+                        <div class="home-block-body">
+                            <div class="home-tools-grid" id="homeToolGridQuick"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- 板块 2：百宝箱（按行业一个模块一个模块展示必读） -->
             <div class="home-section-block" data-section="baibaoxiang" style="display:none;">
-                <div class="home-bbx-wrap" id="homeBbxWrap"></div>
+                <div class="home-block">
+                    <div class="home-block-head">
+                        <h3>百宝箱 · 行业必读</h3>
+                        <a class="link-more" data-go="baibaoxiang">全部 →</a>
+                    </div>
+                    <div class="home-bbx-wrap" id="homeBbxWrap"></div>
+                </div>
             </div>
 
             <!-- 板块 3：工具中心（最常用的几个工具卡片 + 全部） -->
@@ -185,6 +193,17 @@
                     </div>
                     <div class="home-ticket-grid" id="homeTicketGrid"></div>
                 </div>
+            </div>
+
+            <!-- 必读信息（始终在所有板块下方，带 tabs，不随板块切换） -->
+            <div class="home-section-divider">必读信息</div>
+            <div class="home-block">
+                <div class="home-rules-tabs" id="homeRulesTabs">
+                    <span class="home-rules-tab active" data-cat="qualify">引入规则</span>
+                    <span class="home-rules-tab" data-cat="manage">管理类内容</span>
+                    <span class="home-rules-tab" data-cat="risk">风控信息</span>
+                </div>
+                <div class="home-rules-list" id="homeRulesList"></div>
             </div>
         </section>
 

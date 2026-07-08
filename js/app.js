@@ -229,7 +229,9 @@ const App = {
                 el.addEventListener('click', () => this.openNoticeDetail(el.dataset.id));
             });
         }
-        // 第二板块：必读信息（按板块分类）
+        // 板块1：常用工具（首页快速入口，紧凑展示）
+        this.renderHomeToolQuick();
+        // 第二板块：必读信息（按板块分类，带 tabs 切换）
         this.renderHomeRules();
         // 板块 2：百宝箱（按行业一个模块一个模块展示必读）
         this.renderHomeBbx();
@@ -251,22 +253,19 @@ const App = {
             return { key, name: BBX_CATEGORIES[key].name, items };
         }).filter(g => g.items.length > 0);
         if (groups.length === 0) {
-            wrap.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>暂无必读文档</p></div>';
+            wrap.innerHTML = '<div class="empty-state" style="padding:30px;"><div class="empty-icon"></div><p>暂无必读文档</p></div>';
             return;
         }
+        // 每个行业窗格只显示前 3 条必读，避免过高
         wrap.innerHTML = groups.map(g => `
             <div class="home-bbx-module">
                 <div class="home-bbx-module-head">
-                    <div class="home-bbx-module-title">
-                        <span class="bbx-must-flag">必读</span>
-                        ${this.escapeHtml(g.name)}
-                    </div>
+                    <div class="home-bbx-module-title">${this.escapeHtml(g.name)}</div>
                     <a class="home-bbx-module-link" data-go="baibaoxiang" data-bbxfilter="${g.key}">全部 →</a>
                 </div>
                 <div class="home-bbx-module-list">
-                    ${g.items.map(b => `
-                        <a class="home-bbx-module-item" href="${this.escapeAttr(b.url)}" target="_blank" rel="noopener">
-                            <span class="bbx-must-flag">必读</span>
+                    ${g.items.slice(0, 3).map(b => `
+                        <a class="home-bbx-module-item" href="${this.escapeAttr(b.url)}" target="_blank" rel="noopener" title="${this.escapeAttr(b.name)}">
                             ${this.escapeHtml(b.name)}
                         </a>
                     `).join('')}
@@ -331,12 +330,13 @@ const App = {
     },
 
     renderHomeRules() {
-        // 首页内的「必读信息」改为统一展示前 N 条规则（不再按 tab 切换）
+        // 首页内的「必读信息」按 cat 分类展示（带 tabs 切换）
         const list = document.getElementById('homeRulesList');
         if (!list) return;
-        const items = (this.data.rules || []).slice(0, 5);
+        const cat = this.currentHomeRuleCat || 'qualify';
+        const items = (this.data.rules || []).filter(r => r.category === cat);
         if (items.length === 0) {
-            list.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>暂无必读信息</p></div>';
+            list.innerHTML = '<div class="empty-state"><div class="empty-icon"></div><p>该板块暂无内容</p></div>';
             return;
         }
         list.innerHTML = items.map(r => this.ruleItemHtml(r)).join('');
@@ -352,6 +352,23 @@ const App = {
                 this.confirmDeleteRule(btn.dataset.id);
             });
         });
+    },
+
+    renderHomeToolQuick() {
+        // 首页常用工具快速入口（紧凑小卡片，2 行 4 列）
+        const grid = document.getElementById('homeToolGridQuick');
+        if (!grid) return;
+        const items = (this.data.tools || []).slice(0, 8);
+        if (items.length === 0) {
+            grid.innerHTML = '<div class="empty-state" style="padding:20px;"><div class="empty-icon"></div><p>暂无工具</p></div>';
+            return;
+        }
+        grid.innerHTML = items.map(t => `
+            <a class="home-tool-item" href="${this.escapeAttr(t.url)}" target="_blank" rel="noopener">
+                <div class="home-tool-icon home-tool-icon-blue">${this.escapeHtml((t.name || '?').charAt(0))}</div>
+                <div class="home-tool-name">${this.escapeHtml(t.name)}</div>
+            </a>
+        `).join('');
     },
 
     // Banner 自动轮播（带 3 个简单占位图）
@@ -606,6 +623,8 @@ const App = {
     bindHomeRulesTabs() {
         document.querySelectorAll('#homeRulesTabs .home-rules-tab').forEach(t => {
             t.addEventListener('click', () => {
+                document.querySelectorAll('#homeRulesTabs .home-rules-tab').forEach(x => x.classList.remove('active'));
+                t.classList.add('active');
                 this.currentHomeRuleCat = t.dataset.cat;
                 this.renderHomeRules();
             });
